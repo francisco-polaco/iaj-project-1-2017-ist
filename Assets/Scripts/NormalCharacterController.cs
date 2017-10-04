@@ -19,6 +19,7 @@ public class NormalCharacterController : MonoBehaviour {
     private const float AVOID_MARGIN = 5;
     private const float MAX_LOOK_AHEAD = 10f;
 
+    private const float AvoidObstacleWeight = 50f;
     private const float CohesionWeight = 10f;
     private const float FlockVelocityMatchingWeight = 20f;
     private const float SeparationWeight = 5f;
@@ -46,8 +47,6 @@ public class NormalCharacterController : MonoBehaviour {
     //early initialization
     void Awake()
     {
-
-        
         this.character = new DynamicCharacter(this.gameObject);
         this.movementTextText = this.movementText.GetComponent<Text>();
 
@@ -63,7 +62,6 @@ public class NormalCharacterController : MonoBehaviour {
             Character = this.character.KinematicData
         };
         this.character.Movement = this.blendedMovement;
-
     }
 
     // Use this for initialization
@@ -77,47 +75,22 @@ public class NormalCharacterController : MonoBehaviour {
 
         foreach (var obstacle in obstacles)
         {
-            ////TODO: add your AvoidObstacle movement here
-            //var avoidObstacleMovement = new DynamicAvoidObstacle(obstacle) {
-            //    MaxAcceleration = MAX_ACCELERATION,
-            //    AvoidMargin = AVOID_MARGIN,
-            //    MaxLookAhead = MAX_LOOK_AHEAD,
-            //    Character = this.character.KinematicData,
-            //    DebugColor = Color.magenta
-            //};
-            //this.blendedMovement.Movements.Add(new MovementWithWeight(avoidObstacleMovement, 20f));
-            //this.priorityMovement.Movements.Add(avoidObstacleMovement);
-        }
-
-        foreach (var otherCharacter in characters)
-        {
-            if (otherCharacter != this.character)
+            var avoidObstacleMovement = new DynamicAvoidObstacle(obstacle)
             {
-                //TODO: add your AvoidCharacter movement here
-                //var avoidCharacter = new DynamicAvoidCharacter(otherCharacter.KinematicData)
-                //{
-                //    Character = this.character.KinematicData,
-                //    MaxAcceleration = MAX_ACCELERATION,
-                //    AvoidMargin = AVOID_MARGIN,
-                //    MaxLookAhead = MAX_LOOK_AHEAD,
-                //    DebugColor = Color.cyan
-                //};
-                //
-                //this.priorityMovement.Movements.Add(avoidCharacter);
-
-                
-            }
+                MaxAcceleration = MAX_ACCELERATION,
+                AvoidMargin = AVOID_MARGIN,
+                MaxLookAhead = MAX_LOOK_AHEAD,
+                Character = this.character.KinematicData,
+                DebugColor = Color.magenta
+            };
+            this.blendedMovement.Movements.Add(new MovementWithWeight(avoidObstacleMovement, AvoidObstacleWeight));
         }
 
-        
-
-        // New stuff
         Flock flock = new Flock
         {
             Members = characters,
         };
 
-        Debug.Log("Cons: " +booleanDebugDrawGizmos);
         var separation = new DynamicSeparation
         {
             Character = this.character.KinematicData,
