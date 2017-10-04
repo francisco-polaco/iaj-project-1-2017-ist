@@ -6,8 +6,9 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
     public class DynamicAvoidObstacle : DynamicSeek
     {
         private const int Angle = 30;
-        private GameObject _obstacle;
-        public static int _counter = 0;
+        //private GameObject _obstacle;
+        //public static int _counter = 0;
+        private readonly Collider _collider;
 
         public override string Name
         {
@@ -23,7 +24,8 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
         }
 
         public DynamicAvoidObstacle(GameObject obstacle) {
-            this._obstacle = obstacle;
+            //this._obstacle = obstacle;
+            _collider = obstacle.GetComponent<Collider>();
         }
 
         public override MovementOutput GetMovement()
@@ -33,31 +35,31 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
             Vector3 characterOrientation = Character.GetOrientationAsVector();
             var rayOrigin = Character.Position;
 
-            if (Math.Abs((_obstacle.transform.localPosition - Character.Position).magnitude) < 0.3f)
-            {
-                _counter++;
-                Debug.Log("Obstacle: " +_counter);
-            }
+            //if (Math.Abs((_obstacle.transform.localPosition - Character.Position).magnitude) < 0.3f)
+            //{
+            //    _counter++;
+            //    Debug.Log("Obstacle: " +_counter);
+            //}
 
             // Main Ray
             Ray mainRayVector = new Ray(rayOrigin, characterOrientation);
             //Debug.DrawLine(rayOrigin, rayOrigin + characterOrientation * MaxLookAhead, Color.black);
             RaycastHit mainRaycastHit;
-            bool mainResult = _obstacle.GetComponent<Collider>().Raycast(mainRayVector, out mainRaycastHit, MaxLookAhead);
+            bool mainResult = _collider.Raycast(mainRayVector, out mainRaycastHit, MaxLookAhead);
 
             // left ray
             Vector3 leftVector = Quaternion.AngleAxis(-Angle, Vector3.up) * characterOrientation;
             Ray leftRayVector = new Ray(rayOrigin, leftVector);
             //Debug.DrawLine(rayOrigin, rayOrigin + leftVector*MaxLookAhead/2, Color.black);
             RaycastHit leftRaycastHit;
-            bool leftResult = _obstacle.GetComponent<Collider>().Raycast(leftRayVector, out leftRaycastHit, MaxLookAhead / 4);
+            bool leftResult = _collider.Raycast(leftRayVector, out leftRaycastHit, MaxLookAhead / 4);
             
             // right ray
             Vector3 rightVector = Quaternion.AngleAxis(Angle, Vector3.up) * characterOrientation;
             Ray rightRayVector = new Ray(rayOrigin, rightVector);
             //Debug.DrawLine(rayOrigin, rayOrigin + rightVector * MaxLookAhead / 2, Color.black);
             RaycastHit rightRaycastHit;
-            bool rightResult = _obstacle.GetComponent<Collider>().Raycast(rightRayVector, out rightRaycastHit, MaxLookAhead / 4);
+            bool rightResult = _collider.Raycast(rightRayVector, out rightRaycastHit, MaxLookAhead / 4);
 
             if (mainResult) {
                 // Debug.Log("Entrei main");
