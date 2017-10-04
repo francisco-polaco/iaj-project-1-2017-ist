@@ -43,7 +43,11 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
                     CurrentVelocity = boidKinematicData.velocity;
                 }
             }
-            if (closeBoids == 0) return new MovementOutput();
+            if (closeBoids == 0) {
+                CurrentVelocity = new Vector3();
+                FlocksAverageVelocity = new Vector3();
+                return new MovementOutput();
+            }
             averageVelocity /= closeBoids;
             Target.velocity = averageVelocity;
             if (DebugGizmos) {

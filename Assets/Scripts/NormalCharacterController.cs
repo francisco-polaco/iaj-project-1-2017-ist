@@ -22,6 +22,7 @@ public class NormalCharacterController : MonoBehaviour {
     private const float CohesionWeight = 10f;
     private const float FlockVelocityMatchingWeight = 20f;
     private const float SeparationWeight = 5f;
+    private const float WanderWeight = 5f;
 
 
     public KeyCode stopKey = KeyCode.S;
@@ -34,6 +35,16 @@ public class NormalCharacterController : MonoBehaviour {
     public BlendedMovement blendedMovement;
 
     private Text movementTextText;
+
+    private float SeparationRadius = 15f;
+    private float SeparationFactor = 20;
+
+    private float CohesionRadius = 11f;
+    private float CohesionFanAngle = 25f;
+
+    private float VelocityMatchingFanAngle = 5f;
+    private float VelocityMatchingRadius = 12f;
+
 
     //early initialization
     void Awake()
@@ -110,7 +121,7 @@ public class NormalCharacterController : MonoBehaviour {
             DebugColor = Color.yellow
         };
 
-        this.blendedMovement.Movements.Add(new MovementWithWeight(wander, 1));
+        this.blendedMovement.Movements.Add(new MovementWithWeight(wander, WanderWeight));
 
         // New stuff
         Flock flock = new Flock
@@ -125,8 +136,8 @@ public class NormalCharacterController : MonoBehaviour {
             DebugColor = Color.HSVToRGB(0.5f, 0.5f, 0.5f),
             Flock = flock,
             MaxAcceleration = MAX_ACCELERATION,
-            Radius = 10f,
-            SeparationFactor = 20,
+            Radius = SeparationRadius,
+            SeparationFactor = SeparationFactor,
             DebugGizmos = booleanDebugDrawGizmos,
 
         };
@@ -138,8 +149,8 @@ public class NormalCharacterController : MonoBehaviour {
             DebugColor = Color.HSVToRGB(0.6f, 0.6f, 0.6f),
             Flock = flock,
             MaxAcceleration = MAX_ACCELERATION,
-            Radius = 10f,
-            FanAngle = 5f,
+            Radius = CohesionRadius,
+            FanAngle = CohesionFanAngle,
             Target = new KinematicData(),
             RealTarget = new KinematicData(),
             DebugGizmos = booleanDebugDrawGizmos
@@ -153,8 +164,8 @@ public class NormalCharacterController : MonoBehaviour {
             DebugColor = Color.HSVToRGB(0.6f, 0.6f, 0.6f),
             Flock = flock,
             MaxAcceleration = MAX_ACCELERATION,
-            Radius = 10f,
-            FanAngle = 5f,
+            Radius = VelocityMatchingRadius,
+            FanAngle = VelocityMatchingFanAngle,
             Target = new KinematicData(),
             DebugGizmos = booleanDebugDrawGizmos
 

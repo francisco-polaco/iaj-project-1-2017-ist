@@ -15,7 +15,7 @@ public class SceneManager : MonoBehaviour {
     public const float DRAG = 0.1f;
 
     public int NumberOfNormalCharacters = 5; // 
-    public int NumberOfDebugCharacters = 15;  // 
+    public int NumberOfDebugCharacters = 2;  // 
     public KeyCode reloadKey = KeyCode.R;
 
     public GameObject debugCharacterGameObject;
@@ -26,6 +26,8 @@ public class SceneManager : MonoBehaviour {
 
     private List<DebugCharacterController> debugCharacterControllers;
     private List<NormalCharacterController> normalCharacterControllers;
+
+    //private List<GameObject>    
 
     // Use this for initialization
     void Start() {

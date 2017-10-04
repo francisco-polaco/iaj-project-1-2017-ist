@@ -17,6 +17,7 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
         public override MovementOutput GetMovement()
         {
+
             var massCenter = new Vector3();
             int closeBoids = 0;
             List<DynamicCharacter> massCenterFlocks = new List<DynamicCharacter>();
@@ -52,7 +53,10 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
                     }
                 }
             }
-            if (closeBoids == 0) return new MovementOutput();
+            if (closeBoids == 0) {
+                MassCenter = new Vector3();
+                return new MovementOutput();
+            }
             massCenter /= closeBoids;
             if (DebugGizmos)
             {
