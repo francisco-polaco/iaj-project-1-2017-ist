@@ -22,8 +22,14 @@ public class NormalCharacterController : MonoBehaviour {
     private const float CohesionWeight = 10f;
     private const float FlockVelocityMatchingWeight = 20f;
     private const float SeparationWeight = 5f;
-    private const float StraightAheadWeight = 1f;
+    private const float MouseSeekDefaultWeight = 0f;
+    private const float MouseSeekPressedWeight = 5f;
+    private const float StraightAheadDefaultWeight = MouseSeekPressedWeight;
+    private const float StraightAheadPressedWeight = MouseSeekDefaultWeight;
 
+    private const int MouseSeekListIndex = 0;
+    private const int StraightAheadIndex = 1;
+    private const int LeftClickKey = 0; // 0 = left click
 
     public KeyCode stopKey = KeyCode.S;
     public KeyCode priorityKey = KeyCode.P;
@@ -35,6 +41,7 @@ public class NormalCharacterController : MonoBehaviour {
     public BlendedMovement blendedMovement;
 
     private Text movementTextText;
+    private bool _toUpdateMousePosition = false;
 
     //early initialization
     void Awake()
@@ -102,23 +109,7 @@ public class NormalCharacterController : MonoBehaviour {
             }
         }
 
-        var straightAhead = new DynamicStraightAhead
-        {
-            Character = this.character.KinematicData,
-            MaxAcceleration = MAX_ACCELERATION,
-            DebugColor = Color.yellow
-        };
-
-        //var wander = new DynamicWander {
-        //    MaxAcceleration = MAX_ACCELERATION,
-        //    WanderOffset = 3,
-        //    WanderRadius = MathConstants.MATH_PI,
-        //    WanderRate = MathConstants.MATH_PI,
-        //    Character = this.character.KinematicData,
-        //    DebugColor = Color.yellow
-        //};
-
-        this.blendedMovement.Movements.Add(new MovementWithWeight(straightAhead, StraightAheadWeight));
+        
 
         // New stuff
         Flock flock = new Flock
@@ -170,6 +161,25 @@ public class NormalCharacterController : MonoBehaviour {
         this.blendedMovement.Movements.Add(new MovementWithWeight(flockVelocityMatching, 
             FlockVelocityMatchingWeight));
 
+
+        var dynamicSeek = new DynamicSeek
+        {
+            Character = character.KinematicData,
+            Target = new KinematicData(),
+            MaxAcceleration = MAX_ACCELERATION
+        };
+
+        blendedMovement.Movements.Insert(MouseSeekListIndex, new MovementWithWeight(dynamicSeek, MouseSeekDefaultWeight));
+
+
+        var straightAhead = new DynamicStraightAhead
+        {
+            Character = this.character.KinematicData,
+            MaxAcceleration = MAX_ACCELERATION,
+            DebugColor = Color.yellow
+        };
+
+        this.blendedMovement.Movements.Insert(StraightAheadIndex, new MovementWithWeight(straightAhead, StraightAheadDefaultWeight));
         this.character.Movement = this.blendedMovement;
     }
 
@@ -185,7 +195,32 @@ public class NormalCharacterController : MonoBehaviour {
         {
             this.character.Movement = this.blendedMovement;
         }
-   
+        else if (Input.GetMouseButtonDown(LeftClickKey))
+        {
+            this.blendedMovement.Movements[MouseSeekListIndex].Weight = MouseSeekPressedWeight;
+            this.blendedMovement.Movements[StraightAheadIndex].Weight = StraightAheadPressedWeight;
+            _toUpdateMousePosition = true;
+        }
+        else if (Input.GetMouseButtonUp(LeftClickKey))
+        {
+            this.blendedMovement.Movements[MouseSeekListIndex].Weight = MouseSeekDefaultWeight;
+            this.blendedMovement.Movements[StraightAheadIndex].Weight = StraightAheadDefaultWeight;
+            _toUpdateMousePosition = false;
+        }
+
+        if (_toUpdateMousePosition)
+        {
+            Camera c = Camera.main;
+            Vector3 mousePosition = Input.mousePosition;
+            Vector3 mouseOnWorld = c.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y,
+                c.transform.position.y));
+            mouseOnWorld.y = 0;
+            this.blendedMovement.Movements[MouseSeekListIndex].Movement.Target = new KinematicData(new StaticData
+            {
+                Position = mouseOnWorld
+            });
+        }
+
         this.UpdateMovingGameObject();
         this.UpdateMovementText();
     }
