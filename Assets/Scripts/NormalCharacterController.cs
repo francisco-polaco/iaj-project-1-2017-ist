@@ -22,6 +22,7 @@ public class NormalCharacterController : MonoBehaviour {
     private const float CohesionWeight = 10f;
     private const float FlockVelocityMatchingWeight = 20f;
     private const float SeparationWeight = 5f;
+    private const float StraightAheadWeight = 1f;
 
 
     public KeyCode stopKey = KeyCode.S;
@@ -101,16 +102,23 @@ public class NormalCharacterController : MonoBehaviour {
             }
         }
 
-        var wander = new DynamicWander {
-            MaxAcceleration = MAX_ACCELERATION,
-            WanderOffset = 3,
-            WanderRadius = MathConstants.MATH_PI,
-            WanderRate = MathConstants.MATH_PI,
+        var straightAhead = new DynamicStraightAhead
+        {
             Character = this.character.KinematicData,
+            MaxAcceleration = MAX_ACCELERATION,
             DebugColor = Color.yellow
         };
 
-        this.blendedMovement.Movements.Add(new MovementWithWeight(wander, 1));
+        //var wander = new DynamicWander {
+        //    MaxAcceleration = MAX_ACCELERATION,
+        //    WanderOffset = 3,
+        //    WanderRadius = MathConstants.MATH_PI,
+        //    WanderRate = MathConstants.MATH_PI,
+        //    Character = this.character.KinematicData,
+        //    DebugColor = Color.yellow
+        //};
+
+        this.blendedMovement.Movements.Add(new MovementWithWeight(straightAhead, StraightAheadWeight));
 
         // New stuff
         Flock flock = new Flock
