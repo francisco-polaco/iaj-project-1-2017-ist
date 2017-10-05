@@ -7,11 +7,11 @@ using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 {
-    class FlockVelocityMatching : DynamicVelocityMatch
+    class DynamicFlockVelocityMatching : DynamicVelocityMatch
     {
         public override string Name
         {
-            get { return "FlockVelocityMatching"; }
+            get { return "DynamicFlockVelocityMatching"; }
         }
 
 

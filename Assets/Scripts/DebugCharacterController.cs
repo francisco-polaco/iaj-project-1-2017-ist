@@ -7,35 +7,27 @@ using Assets.Scripts.IAJ.Unity.Util;
 
 public class DebugCharacterController : NormalCharacterController
 {
-
-    //public const float X_WORLD_SIZE = 55;
-    //public const float Z_WORLD_SIZE = 32.5f;
-    //private const float MAX_ACCELERATION = 40.0f;
-    //private const float MAX_SPEED = 20.0f;
-    //private const float DRAG = 0.1f;
-    //
-    //private const float AVOID_MARGIN = 5;
-    //private const float MAX_LOOK_AHEAD = 10f;
-    //
-    //public DynamicCharacter character;
-    //private PriorityMovement priorityMovement;
-
-    private Vector3 defaultito = new Vector3();
-    private readonly Vector3 cameraNormal = new Vector3(0, 1, 0);
+    private readonly Vector3 _defaultito = new Vector3();
+    private readonly Vector3 _cameraNormal = new Vector3(0, 1, 0);
+    private const KeyCode SeparationKeyActivate = KeyCode.X;
+    private const KeyCode SeparationKeyDeactivate = KeyCode.S;
+    private const KeyCode CohesionKeyActivate = KeyCode.C;
+    private const KeyCode CohesionKeyDeactivate = KeyCode.D;
+    private const KeyCode VelocityMatchingKeyActivate = KeyCode.V;
+    private const KeyCode VelocityMatchingKeyDeactivate = KeyCode.F;
 
     void Awake()
     {
-        
         this.Character = new DynamicCharacter(this.gameObject);
-    
+
         this.BlendedMovement = new BlendedMovement
         {
             Character = this.Character.KinematicData
         };
     }
+
     void OnDrawGizmos()
     {
-        //TODO: this code is not working, try to figure it out
         if (this.Character != null && this.Character.Movement != null)
         {
             BlendedMovement blendedMov = this.Character.Movement as BlendedMovement;
@@ -43,68 +35,68 @@ public class DebugCharacterController : NormalCharacterController
             {
                 foreach (var movementWithWeight in blendedMov.Movements)
                 {
-                    //var wander = movementWithWeight.Movement as DynamicWander;
-                    //if (wander != null)
-                    //{
-                    //    UnityEditor.Handles.color = wander.DebugColor;
-                    //    UnityEditor.Handles.DrawWireDisc(wander.CircleCenter, cameraNormal,wander.WanderRadius);
-                    //}
                     var separation = movementWithWeight.Movement as DynamicSeparation;
-                    if (separation != null)
+                    if (separation != null && separation.DebugGizmos)
                     {
                         UnityEditor.Handles.color = separation.DebugColor;
-                        UnityEditor.Handles.DrawWireDisc(separation.Character.Position, cameraNormal,separation.Radius);
+                        UnityEditor.Handles.DrawWireDisc(separation.Character.Position, _cameraNormal,
+                            separation.Radius);
                     }
 
                     var cohesion = movementWithWeight.Movement as DynamicCohesion;
-                    if (cohesion != null)
+                    if (cohesion != null && cohesion.DebugGizmos)
                     {
                         UnityEditor.Handles.color = cohesion.DebugColor;
-                        UnityEditor.Handles.DrawWireDisc(cohesion.Character.Position, cameraNormal, cohesion.Radius);
+                        UnityEditor.Handles.DrawWireDisc(cohesion.Character.Position, _cameraNormal, cohesion.Radius);
 
-                        Vector3 rightVector = Quaternion.AngleAxis(cohesion.FanAngleDegrees, Vector3.up) * cohesion.Character.GetOrientationAsVector();
-                        Vector3 leftVector = Quaternion.AngleAxis(-cohesion.FanAngleDegrees, Vector3.up) * cohesion.Character.GetOrientationAsVector();
+                        Vector3 rightVector = Quaternion.AngleAxis(cohesion.FanAngleDegrees, Vector3.up) *
+                                              cohesion.Character.GetOrientationAsVector();
+                        Vector3 leftVector = Quaternion.AngleAxis(-cohesion.FanAngleDegrees, Vector3.up) *
+                                             cohesion.Character.GetOrientationAsVector();
 
                         var point1 = cohesion.Character.Position + rightVector.normalized * cohesion.Radius;
                         var point2 = cohesion.Character.Position + leftVector.normalized * cohesion.Radius;
                         UnityEditor.Handles.DrawLine(cohesion.Character.Position, point1);
                         UnityEditor.Handles.DrawLine(cohesion.Character.Position, point2);
 
-                        if (cohesion.MassCenter != defaultito)
+                        if (cohesion.MassCenter != _defaultito)
                         {
                             UnityEditor.Handles.color = cohesion.MassCenterColor;
-                            UnityEditor.Handles.DrawWireDisc(cohesion.MassCenter,cameraNormal, 0.4f);
+                            UnityEditor.Handles.DrawWireDisc(cohesion.MassCenter, _cameraNormal, 0.4f);
                             Gizmos.color = cohesion.MassCenterColor;
                             Gizmos.DrawSphere(cohesion.MassCenter, 0.4f);
                         }
                     }
-                    var flockVelocityMatch = movementWithWeight.Movement as FlockVelocityMatching;
-                    if (flockVelocityMatch != null) {
+                    var flockVelocityMatch = movementWithWeight.Movement as DynamicFlockVelocityMatching;
+                    if (flockVelocityMatch != null && flockVelocityMatch.DebugGizmos)
+                    {
                         UnityEditor.Handles.color = flockVelocityMatch.DebugColor;
-                        UnityEditor.Handles.DrawWireDisc(flockVelocityMatch.Character.Position, cameraNormal,flockVelocityMatch.Radius);
+                        UnityEditor.Handles.DrawWireDisc(flockVelocityMatch.Character.Position, _cameraNormal,
+                            flockVelocityMatch.Radius);
 
-                        Vector3 rightVector = Quaternion.AngleAxis(flockVelocityMatch.FanAngleDegrees, Vector3.up) * flockVelocityMatch.Character.GetOrientationAsVector();
-                        Vector3 leftVector = Quaternion.AngleAxis(-flockVelocityMatch.FanAngleDegrees, Vector3.up) * flockVelocityMatch.Character.GetOrientationAsVector();
+                        Vector3 rightVector = Quaternion.AngleAxis(flockVelocityMatch.FanAngleDegrees, Vector3.up) *
+                                              flockVelocityMatch.Character.GetOrientationAsVector();
+                        Vector3 leftVector = Quaternion.AngleAxis(-flockVelocityMatch.FanAngleDegrees, Vector3.up) *
+                                             flockVelocityMatch.Character.GetOrientationAsVector();
 
-                        var point1 = flockVelocityMatch.Character.Position + rightVector.normalized * flockVelocityMatch.Radius;
-                        var point2 = flockVelocityMatch.Character.Position + leftVector.normalized * flockVelocityMatch.Radius;
+                        var point1 = flockVelocityMatch.Character.Position +
+                                     rightVector.normalized * flockVelocityMatch.Radius;
+                        var point2 = flockVelocityMatch.Character.Position +
+                                     leftVector.normalized * flockVelocityMatch.Radius;
                         UnityEditor.Handles.DrawLine(flockVelocityMatch.Character.Position, point1);
                         UnityEditor.Handles.DrawLine(flockVelocityMatch.Character.Position, point2);
 
-                        if (flockVelocityMatch.CurrentVelocity != defaultito) {
+                        if (flockVelocityMatch.CurrentVelocity != _defaultito)
+                        {
                             Gizmos.color = flockVelocityMatch.CurrentVelocityColor;
-                            //new Color(139f / 255f, 69f / 255f, 19f / 255f);
-
-                            ;
-
-                            //Gizmos.DrawWireSphere(cohesion.MassCenter, 0.2f);
-                            Gizmos.DrawLine(flockVelocityMatch.Character.Position, flockVelocityMatch.Character.Position + flockVelocityMatch.CurrentVelocity);
+                            Gizmos.DrawLine(flockVelocityMatch.Character.Position,
+                                flockVelocityMatch.Character.Position + flockVelocityMatch.CurrentVelocity);
                         }
-                        if (flockVelocityMatch.FlocksAverageVelocity != defaultito) {
+                        if (flockVelocityMatch.FlocksAverageVelocity != _defaultito)
+                        {
                             Gizmos.color = flockVelocityMatch.FlocksAverageVelocityColor;
-                            //new Color(218f / 255f, 165f / 255f, 32f / 255f);
-                            //Gizmos.DrawWireSphere(cohesion.MassCenter, 0.2f);
-                            Gizmos.DrawLine(flockVelocityMatch.Character.Position, flockVelocityMatch.Character.Position + flockVelocityMatch.FlocksAverageVelocity);
+                            Gizmos.DrawLine(flockVelocityMatch.Character.Position,
+                                flockVelocityMatch.Character.Position + flockVelocityMatch.FlocksAverageVelocity);
                         }
                     }
 
@@ -123,7 +115,41 @@ public class DebugCharacterController : NormalCharacterController
                 }
             }
         }
-
     }
 
+    protected override void Update2()
+    {
+        if (Input.GetKeyDown(SeparationKeyActivate))
+        {
+            var mov = this.BlendedMovement.Movements[SeparationIndex].Movement as DynamicSeparation;
+            mov.DebugGizmos = true;
+        }
+        if (Input.GetKeyDown(SeparationKeyDeactivate))
+        {
+            var mov = this.BlendedMovement.Movements[SeparationIndex].Movement as DynamicSeparation;
+            mov.DebugGizmos = false;
+        }
+        if (Input.GetKeyDown(CohesionKeyActivate))
+        {
+            var mov = this.BlendedMovement.Movements[CohesionIndex].Movement as DynamicCohesion;
+            mov.DebugGizmos = true;
+        }
+        if (Input.GetKeyDown(CohesionKeyDeactivate))
+        {
+            var mov = this.BlendedMovement.Movements[CohesionIndex].Movement as DynamicCohesion;
+            mov.DebugGizmos = false;
+        }
+        if (Input.GetKeyDown(VelocityMatchingKeyActivate))
+        {
+            var mov = this.BlendedMovement.Movements[FlockVelocityMatchingIndex].Movement as DynamicFlockVelocityMatching;
+            mov.DebugGizmos = true;
+        }
+        if (Input.GetKeyDown(VelocityMatchingKeyDeactivate))
+        {
+            var mov = this.BlendedMovement.Movements[FlockVelocityMatchingIndex].Movement as DynamicFlockVelocityMatching;
+            mov.DebugGizmos = false;
+        }
+
+        base.Update2();
+    }
 }

@@ -26,8 +26,14 @@ public class NormalCharacterController : MonoBehaviour {
     private const float StraightAheadDefaultWeight = MouseSeekPressedWeight;
     private const float StraightAheadPressedWeight = MouseSeekDefaultWeight;
 
-    private const int MouseSeekListIndex = 0;
-    private const int StraightAheadIndex = 1;
+    protected const int MouseSeekListIndex = 0;
+    protected const int StraightAheadIndex = 1;
+    protected const int SeparationIndex = 2;
+    protected const int CohesionIndex = 3;
+    protected const int FlockVelocityMatchingIndex = 4;
+
+    
+
     private const int LeftClickKey = 0; // 0 = left click
 
     public DynamicCharacter Character;
@@ -90,18 +96,23 @@ public class NormalCharacterController : MonoBehaviour {
     {
         ResetBlended();
 
-        foreach (var obstacle in obstacles)
+        var dynamicSeek = new DynamicSeek
         {
-            var avoidObstacleMovement = new DynamicAvoidObstacle(obstacle)
-            {
-                MaxAcceleration = MaxAcceleration,
-                AvoidMargin = AvoidMargin,
-                MaxLookAhead = MaxLookAhead,
-                Character = this.Character.KinematicData,
-                DebugColor = Color.magenta
-            };
-            this.BlendedMovement.Movements.Add(new MovementWithWeight(avoidObstacleMovement, AvoidObstacleWeight));
-        }
+            Character = Character.KinematicData,
+            Target = new KinematicData(),
+            MaxAcceleration = MaxAcceleration
+        };
+        BlendedMovement.Movements.Insert(MouseSeekListIndex, new MovementWithWeight(dynamicSeek, MouseSeekDefaultWeight));
+
+        var straightAhead = new DynamicStraightAhead
+        {
+            Character = this.Character.KinematicData,
+            MaxAcceleration = MaxAcceleration,
+            DebugColor = Color.yellow
+        };
+        this.BlendedMovement.Movements.Insert(StraightAheadIndex, new MovementWithWeight(straightAhead, StraightAheadDefaultWeight));
+
+
 
         Flock flock = new Flock
         {
@@ -121,7 +132,7 @@ public class NormalCharacterController : MonoBehaviour {
             DebugGizmos = booleanDebugDrawGizmos,
 
         };
-        this.BlendedMovement.Movements.Add(new MovementWithWeight(separation, SeparationWeight));
+        this.BlendedMovement.Movements.Insert(SeparationIndex, new MovementWithWeight(separation, SeparationWeight));
 
         var cohesion = new DynamicCohesion {
             DebugColor = cohesionColor,
@@ -138,9 +149,9 @@ public class NormalCharacterController : MonoBehaviour {
             DebugGizmos = booleanDebugDrawGizmos
 
         };
-        this.BlendedMovement.Movements.Add(new MovementWithWeight(cohesion, CohesionWeight));
+        this.BlendedMovement.Movements.Insert(CohesionIndex, new MovementWithWeight(cohesion, CohesionWeight));
 
-        var flockVelocityMatching = new FlockVelocityMatching {
+        var flockVelocityMatching = new DynamicFlockVelocityMatching {
             DebugColor = velocityMatchColor,
             CurrentVelocityColor = velocityMatchCurrentVelocityColor,
             FlocksAverageVelocityColor = velocityMatchFlocksAverageVelocityColor,
@@ -154,34 +165,36 @@ public class NormalCharacterController : MonoBehaviour {
             DebugGizmos = booleanDebugDrawGizmos
 
         };
-        this.BlendedMovement.Movements.Add(new MovementWithWeight(flockVelocityMatching, 
+        this.BlendedMovement.Movements.Insert(FlockVelocityMatchingIndex, new MovementWithWeight(flockVelocityMatching, 
             FlockVelocityMatchingWeight));
 
-
-        var dynamicSeek = new DynamicSeek
+        foreach (var obstacle in obstacles)
         {
-            Character = Character.KinematicData,
-            Target = new KinematicData(),
-            MaxAcceleration = MaxAcceleration
-        };
+            var avoidObstacleMovement = new DynamicAvoidObstacle(obstacle)
+            {
+                MaxAcceleration = MaxAcceleration,
+                AvoidMargin = AvoidMargin,
+                MaxLookAhead = MaxLookAhead,
+                Character = this.Character.KinematicData,
+                DebugColor = Color.magenta
+            };
+            this.BlendedMovement.Movements.Add(new MovementWithWeight(avoidObstacleMovement, AvoidObstacleWeight));
+        }
 
-        BlendedMovement.Movements.Insert(MouseSeekListIndex, new MovementWithWeight(dynamicSeek, MouseSeekDefaultWeight));
 
 
-        var straightAhead = new DynamicStraightAhead
-        {
-            Character = this.Character.KinematicData,
-            MaxAcceleration = MaxAcceleration,
-            DebugColor = Color.yellow
-        };
 
-        this.BlendedMovement.Movements.Insert(StraightAheadIndex, new MovementWithWeight(straightAhead, StraightAheadDefaultWeight));
         this.Character.Movement = this.BlendedMovement;
     }
 
 
 
     void Update()
+    {
+        Update2();
+    }
+
+    protected virtual void Update2()
     {
         if (Input.GetMouseButtonDown(LeftClickKey))
         {
