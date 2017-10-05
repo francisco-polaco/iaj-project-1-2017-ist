@@ -25,33 +25,24 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
             {
                 var boidKinematicData = boid.KinematicData;
 
-                if (Character != boidKinematicData)
-                {
-                    var direction = boidKinematicData.Position - Character.Position;
-                    if (direction.magnitude <= Radius)
-                    {
-                        var angle = MathHelper.ConvertVectorToOrientation(direction);
-                        var angleDifference = MathHelper.ShortestAngleDifference(Character.Orientation, angle);
-                        if (Math.Abs(angleDifference) <= FanAngle)
-                        {
-                            massCenter += boidKinematicData.Position;
 
-                            closeBoids++;
-                            if (DebugGizmos)
-                            {
-                                massCenterFlocks.Add(boid);
-                            }
+                var direction = boidKinematicData.Position - Character.Position;
+                if (direction.magnitude <= Radius)
+                {
+                    var angle = MathHelper.ConvertVectorToOrientation(direction);
+                    var angleDifference = MathHelper.ShortestAngleDifference(Character.Orientation, angle);
+                    if (Math.Abs(angleDifference) <= FanAngle)
+                    {
+                        massCenter += boidKinematicData.Position;
+
+                        closeBoids++;
+                        if (DebugGizmos)
+                        {
+                            massCenterFlocks.Add(boid);
                         }
                     }
                 }
-                else
-                {
 
-                    if (DebugGizmos)
-                    {
-                        massCenterFlocks.Add(boid);
-                    }
-                }
             }
             if (closeBoids == 0) {
                 MassCenter = new Vector3();

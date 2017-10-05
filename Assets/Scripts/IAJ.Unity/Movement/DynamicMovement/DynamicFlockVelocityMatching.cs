@@ -19,29 +19,31 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
         {
             var averageVelocity = new Vector3();
             var closeBoids = 0;
+            if (DebugGizmos)
+            {
+                // Entao e debug e estamos no caso do carater
+                CurrentVelocity = Character.velocity;
+            }
             foreach (var boid in Flock.Members)
             {
                 var boidKinematicData = boid.KinematicData;
-                if (Character != boidKinematicData)
+
+
+                var direction = boidKinematicData.Position - Character.Position;
+
+                if (direction.magnitude <= Radius)
                 {
-                    var direction = boidKinematicData.Position - Character.Position;
+                    var directonVector = MathHelper.ConvertVectorToOrientation(direction);
 
-                    if (direction.magnitude <= Radius)
-                    {
-                        var directonVector = MathHelper.ConvertVectorToOrientation(direction);
-
-                        var angleDifference = 
+                    var angleDifference =
                         MathHelper.ShortestAngleDifference(Character.Orientation, directonVector);
-                        if (Math.Abs(angleDifference) <= FanAngle)
-                        {
-                            averageVelocity += boidKinematicData.velocity;
-                            closeBoids++;
-                        }
+                    if (Math.Abs(angleDifference) <= FanAngle)
+                    {
+                        averageVelocity += boidKinematicData.velocity;
+                        closeBoids++;
                     }
-                } else if ( DebugGizmos) {
-                    // Entao e debug e estamos no caso do carater
-                    CurrentVelocity = boidKinematicData.velocity;
                 }
+
             }
             if (closeBoids == 0) {
                 CurrentVelocity = new Vector3();

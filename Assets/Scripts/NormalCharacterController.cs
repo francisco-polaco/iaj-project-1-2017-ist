@@ -18,7 +18,7 @@ public class NormalCharacterController : MonoBehaviour {
     private const float AvoidMargin = 5;
     private const float MaxLookAhead = 10f;
 
-    private const float AvoidObstacleWeight = 50f;
+    private const float AvoidObstacleWeight = 30f;
     private const float CohesionWeight = 10f;
     private const float FlockVelocityMatchingWeight = 20f;
     private const float SeparationWeight = 10f;
@@ -118,9 +118,13 @@ public class NormalCharacterController : MonoBehaviour {
 
         Flock flock = new Flock
         {
-            Members = characters,
+            Members = new List<DynamicCharacter>(characters),
         };
-
+        /* Optimization
+         * Removing this character from the flock, allow us to avoid the != operation of Static Data
+         * which greatly optimizes the execution of flock movements.
+         */
+        if(!flock.Members.Remove(Character)) throw new Exception("Impossible to Optimize. Should not have happened, try again later!");
         var separation = new DynamicSeparation
         {
             DebugColor = _separationColor,
@@ -128,7 +132,7 @@ public class NormalCharacterController : MonoBehaviour {
             LinksBetweenBoidsColor = _separationLinksBetweenBoidsColor,
             Character = this.Character.KinematicData,
             Flock = flock,
-            MaxAcceleration = MaxAcceleration,
+            MaxAcceleration = AvoidObstacleMaxAcceleration,
             Radius = SeparationRadius,
             SeparationFactor = SeparationFactor,
             DebugGizmos = booleanDebugDrawGizmos,
@@ -170,6 +174,7 @@ public class NormalCharacterController : MonoBehaviour {
         this.BlendedMovement.Movements.Insert(FlockVelocityMatchingIndex, new MovementWithWeight(flockVelocityMatching, 
             FlockVelocityMatchingWeight));
 
+
         foreach (var obstacle in obstacles)
         {
             var avoidObstacleMovement = new DynamicAvoidObstacle(obstacle)
@@ -183,8 +188,6 @@ public class NormalCharacterController : MonoBehaviour {
             };
             this.BlendedMovement.Movements.Add(new MovementWithWeight(avoidObstacleMovement, AvoidObstacleWeight));
         }
-
-
 
 
         this.Character.Movement = this.BlendedMovement;

@@ -25,24 +25,23 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
             {
                 var boidKinematicData = boid.KinematicData;
 
-                if (boidKinematicData != Character)
+                
+                var direction = Character.Position - boidKinematicData.Position; //Boid to Char
+                var distance = direction.magnitude;
+                if (direction.magnitude < Radius)
                 {
-                    var direction = Character.Position - boidKinematicData.Position; //Boid to Char
-                    var distance = direction.magnitude;
-                    if (direction.magnitude < Radius)
-                    {
-                        var separationStrength = Math.Min(SeparationFactor / (distance * distance),
-                            MaxAcceleration);
-                        direction.Normalize();
-                        Output.linear += direction * separationStrength;
+                    var separationStrength = Math.Min(SeparationFactor / (distance * distance),
+                        MaxAcceleration);
+                    direction.Normalize();
+                    Output.linear += direction * separationStrength;
 
 
-                        if (DebugGizmos)
-                        {  
-                            Debug.DrawLine(boid.KinematicData.Position, Character.Position, this.LinksBetweenBoidsColor);
-                        }
+                    if (DebugGizmos)
+                    {  
+                        Debug.DrawLine(boid.KinematicData.Position, Character.Position, this.LinksBetweenBoidsColor);
                     }
                 }
+                
             }
 
 
