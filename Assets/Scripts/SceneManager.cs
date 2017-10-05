@@ -22,7 +22,6 @@ public class SceneManager : MonoBehaviour {
     public GameObject normalCharacterGameObject;
 
     private BlendedMovement Blended { get; set; }
-    private PriorityMovement Priority { get; set; }
 
     private List<DebugCharacterController> debugCharacterControllers;
     private List<NormalCharacterController> normalCharacterControllers;

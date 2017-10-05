@@ -45,7 +45,7 @@ public class NormalCharacterController : MonoBehaviour {
     private bool _toUpdateMousePosition = false;
 
     private float SeparationRadius = 15f;
-    private float SeparationFactor = 20;
+    private float SeparationFactor = 20f;
 
     private float CohesionRadius = 11f;
     private float CohesionFanAngle = 25f;
