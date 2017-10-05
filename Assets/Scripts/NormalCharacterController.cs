@@ -35,7 +35,6 @@ public class NormalCharacterController : MonoBehaviour {
     protected const int AvoidObstacleStartIndex = 5;
 
 
-
     private const int LeftClickKey = 0; // 0 = left click
 
     public DynamicCharacter Character;
@@ -44,30 +43,30 @@ public class NormalCharacterController : MonoBehaviour {
 
     private bool _toUpdateMousePosition = false;
 
-    private float SeparationRadius = 10f;
-    private float SeparationFactor = 20f;
+    private const float SeparationRadius = 10f;
+    private const float SeparationFactor = 20f;
 
-    private float CohesionRadius = 25f;
+    private const float CohesionRadius = 25f;
 
-    private static float CohesionFanAngleDegrees = 100f;
-    private double CohesionFanAngleRads = MathHelper.NormalDegreeToRadian(CohesionFanAngleDegrees);
+    private const float CohesionFanAngleDegrees = 100f;
+    private readonly double _cohesionFanAngleRads = MathHelper.NormalDegreeToRadian(CohesionFanAngleDegrees);
 
-    private static float VelocityMatchingFanAngleDegrees = 60f;
-    private double VelocityMatchingFanAngleRads = MathHelper.NormalDegreeToRadian(VelocityMatchingFanAngleDegrees);
-    private float VelocityMatchingRadius = 25f;
+    private const float VelocityMatchingFanAngleDegrees = 60f;
+    private readonly double _velocityMatchingFanAngleRads = MathHelper.NormalDegreeToRadian(VelocityMatchingFanAngleDegrees);
+    private const float VelocityMatchingRadius = 25f;
 
-    private Color separationColor = new Color(255 / 255f, 0f / 255f, 0 / 255f); //red
-    private Color separationLinksBetweenBoidsColor = new Color(165/255f,42/255f,42/255f);
-    private Color separationAccelarationColor = new Color(0.5f,0,0);
+    private readonly Color _separationColor = new Color(255 / 255f, 0f / 255f, 0 / 255f); //red
+    private readonly Color _separationLinksBetweenBoidsColor = new Color(165/255f,42/255f,42/255f);
+    private readonly Color _separationAccelarationColor = new Color(0.5f,0,0);
 
-    private Color cohesionColor = new Color(210 / 255f, 105 / 255f, 30 / 255f); //brown
-    private Color cohesionMassCenterColor = new Color(139f / 255f, 69 / 255f, 19/255f); // orange
-    private Color cohesionLinksBetweenBoidsColor = new Color(218 / 255f, 165 / 255f, 32/255f); // goldenrod
+    private readonly Color _cohesionColor = new Color(210 / 255f, 105 / 255f, 30 / 255f); //brown
+    private readonly Color _cohesionMassCenterColor = new Color(139f / 255f, 69 / 255f, 19/255f); // orange
+    private readonly Color _cohesionLinksBetweenBoidsColor = new Color(218 / 255f, 165 / 255f, 32/255f); // goldenrod
 
 
-    private Color velocityMatchColor = new Color(0 / 255f, 0f / 255f, 255f / 255f); //blue
-    private Color velocityMatchCurrentVelocityColor = new Color(25 / 255f, 25f / 255f, 112f / 255f); //dark blue 
-    private Color velocityMatchFlocksAverageVelocityColor = new Color(173f / 255f, 216f / 255f, 230f / 255f); //light blue
+    private readonly Color _velocityMatchColor = new Color(0 / 255f, 0f / 255f, 255f / 255f); //blue
+    private readonly Color _velocityMatchCurrentVelocityColor = new Color(25 / 255f, 25f / 255f, 112f / 255f); //dark blue 
+    private readonly Color _velocityMatchFlocksAverageVelocityColor = new Color(173f / 255f, 216f / 255f, 230f / 255f); //light blue
 
 
     //early initialization
@@ -123,9 +122,9 @@ public class NormalCharacterController : MonoBehaviour {
 
         var separation = new DynamicSeparation
         {
-            DebugColor = separationColor,
-            AccelarionColor = separationAccelarationColor,
-            LinksBetweenBoidsColor = separationLinksBetweenBoidsColor,
+            DebugColor = _separationColor,
+            AccelarionColor = _separationAccelarationColor,
+            LinksBetweenBoidsColor = _separationLinksBetweenBoidsColor,
             Character = this.Character.KinematicData,
             Flock = flock,
             MaxAcceleration = MaxAcceleration,
@@ -137,14 +136,14 @@ public class NormalCharacterController : MonoBehaviour {
         this.BlendedMovement.Movements.Insert(SeparationIndex, new MovementWithWeight(separation, SeparationWeight));
 
         var cohesion = new DynamicCohesion {
-            DebugColor = cohesionColor,
-            MassCenterColor = this.cohesionMassCenterColor,
-            LinksBetweenBoidsColor = this.cohesionLinksBetweenBoidsColor,
+            DebugColor = _cohesionColor,
+            MassCenterColor = this._cohesionMassCenterColor,
+            LinksBetweenBoidsColor = this._cohesionLinksBetweenBoidsColor,
             Character = this.Character.KinematicData,
             Flock = flock,
             MaxAcceleration = MaxAcceleration,
             Radius = CohesionRadius,
-            FanAngle = CohesionFanAngleRads,
+            FanAngle = _cohesionFanAngleRads,
             FanAngleDegrees = CohesionFanAngleDegrees,
             Target = new KinematicData(),
             RealTarget = new KinematicData(),
@@ -154,14 +153,14 @@ public class NormalCharacterController : MonoBehaviour {
         this.BlendedMovement.Movements.Insert(CohesionIndex, new MovementWithWeight(cohesion, CohesionWeight));
 
         var flockVelocityMatching = new DynamicFlockVelocityMatching {
-            DebugColor = velocityMatchColor,
-            CurrentVelocityColor = velocityMatchCurrentVelocityColor,
-            FlocksAverageVelocityColor = velocityMatchFlocksAverageVelocityColor,
+            DebugColor = _velocityMatchColor,
+            CurrentVelocityColor = _velocityMatchCurrentVelocityColor,
+            FlocksAverageVelocityColor = _velocityMatchFlocksAverageVelocityColor,
             Character = this.Character.KinematicData,
             Flock = flock,
             MaxAcceleration = MaxAcceleration,
             Radius = VelocityMatchingRadius,
-            FanAngle = VelocityMatchingFanAngleRads,
+            FanAngle = _velocityMatchingFanAngleRads,
             FanAngleDegrees = VelocityMatchingFanAngleDegrees,
             Target = new KinematicData(),
             DebugGizmos = booleanDebugDrawGizmos
