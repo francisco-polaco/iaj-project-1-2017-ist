@@ -38,9 +38,8 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
 
                         if (DebugGizmos)
-                        {
-                           
-                            Debug.DrawLine(boid.KinematicData.Position, Character.Position,Color.blue);
+                        {  
+                            Debug.DrawLine(boid.KinematicData.Position, Character.Position, this.LinksBetweenBoidsColor);
                         }
                     }
                 }
@@ -49,7 +48,7 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
             if (DebugGizmos)
             {
-                Debug.DrawLine(Character.Position, Character.Position + Output.linear, Color.red);//this.DebugColor);
+                Debug.DrawLine(Character.Position, Character.Position + Output.linear, this.AccelarionColor);
             }
 
 
@@ -71,5 +70,8 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
         public Flock Flock { get; set; }
 
         public Boolean DebugGizmos { get; set; }
+
+        public Color AccelarionColor { get; set; }
+        public Color LinksBetweenBoidsColor { get; set; }
     }
 }

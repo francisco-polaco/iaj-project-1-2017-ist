@@ -30,14 +30,28 @@ namespace Assets.Scripts.IAJ.Unity.Util
             var delta = target - source;
             if (delta > MathConstants.MATH_PI)
             {
-                delta -= 360;
+                delta -= 2* MathConstants.MATH_PI;
             }
             else if (delta < -MathConstants.MATH_PI)
             {
-                delta += 360;
+                delta += 2* MathConstants.MATH_PI;
             }
 
             return delta;
+        }
+
+        public static double NormalDegreeToRadian(float angle) {
+            if (angle > 360) {
+                while (angle > 360) {
+                    angle -= 360;
+                }
+            }
+            if (angle < -360) {
+                while (angle < -360) {
+                    angle += 360;
+                }
+            }
+            return MathConstants.MATH_PI_180 * angle;
         }
     }
 }

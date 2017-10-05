@@ -48,10 +48,26 @@ public class NormalCharacterController : MonoBehaviour {
     private float SeparationFactor = 20;
 
     private float CohesionRadius = 11f;
-    private float CohesionFanAngle = 25f;
 
-    private float VelocityMatchingFanAngle = 5f;
+    private static float CohesionFanAngleDegrees = 100f;
+    private double CohesionFanAngleRads = MathHelper.NormalDegreeToRadian(CohesionFanAngleDegrees);
+
+    private static float VelocityMatchingFanAngleDegrees = 60f;
+    private double VelocityMatchingFanAngleRads = MathHelper.NormalDegreeToRadian(VelocityMatchingFanAngleDegrees);
     private float VelocityMatchingRadius = 12f;
+
+    private Color separationColor = new Color(255 / 255f, 0f / 255f, 0 / 255f); //red
+    private Color separationLinksBetweenBoidsColor = new Color(165/255f,42/255f,42/255f);
+    private Color separationAccelarationColor = new Color(0.5f,0,0);
+
+    private Color cohesionColor = new Color(210 / 255f, 105 / 255f, 30 / 255f); //brown
+    private Color cohesionMassCenterColor = new Color(139f / 255f, 69 / 255f, 19/255f); // orange
+    private Color cohesionLinksBetweenBoidsColor = new Color(218 / 255f, 165 / 255f, 32/255f); // goldenrod
+
+
+    private Color velocityMatchColor = new Color(0 / 255f, 0f / 255f, 255f / 255f); //blue
+    private Color velocityMatchCurrentVelocityColor = new Color(25 / 255f, 25f / 255f, 112f / 255f); //dark blue 
+    private Color velocityMatchFlocksAverageVelocityColor = new Color(173f / 255f, 216f / 255f, 230f / 255f); //light blue
 
 
     //early initialization
@@ -104,7 +120,9 @@ public class NormalCharacterController : MonoBehaviour {
         var separation = new DynamicSeparation
         {
             Character = this.character.KinematicData,
-            DebugColor = Color.HSVToRGB(0.5f, 0.5f, 0.5f),
+            DebugColor = separationColor,
+            AccelarionColor = separationAccelarationColor,
+            LinksBetweenBoidsColor = separationLinksBetweenBoidsColor,
             Flock = flock,
             MaxAcceleration = MAX_ACCELERATION,
             Radius = SeparationRadius,
@@ -114,14 +132,16 @@ public class NormalCharacterController : MonoBehaviour {
         };
         this.blendedMovement.Movements.Add(new MovementWithWeight(separation, SeparationWeight));
 
-        var cohesion = new DynamicCohesion
-        {
+        var cohesion = new DynamicCohesion {
             Character = this.character.KinematicData,
-            DebugColor = Color.HSVToRGB(0.6f, 0.6f, 0.6f),
+            DebugColor = cohesionColor,
+            MassCenterColor = this.cohesionMassCenterColor,
+            LinksBetweenBoidsColor = this.cohesionLinksBetweenBoidsColor,
             Flock = flock,
             MaxAcceleration = MAX_ACCELERATION,
             Radius = CohesionRadius,
-            FanAngle = CohesionFanAngle,
+            FanAngle = CohesionFanAngleRads,
+            FanAngleDegrees = CohesionFanAngleDegrees,
             Target = new KinematicData(),
             RealTarget = new KinematicData(),
             DebugGizmos = booleanDebugDrawGizmos
@@ -129,14 +149,17 @@ public class NormalCharacterController : MonoBehaviour {
         };
         this.blendedMovement.Movements.Add(new MovementWithWeight(cohesion, CohesionWeight));
 
-        var flockVelocityMatching = new FlockVelocityMatching
-        {
+        var flockVelocityMatching = new FlockVelocityMatching {
             Character = this.character.KinematicData,
-            DebugColor = Color.HSVToRGB(0.6f, 0.6f, 0.6f),
+            DebugColor = velocityMatchColor,
+            CurrentVelocityColor = velocityMatchCurrentVelocityColor,
+            FlocksAverageVelocityColor = velocityMatchFlocksAverageVelocityColor,
+
             Flock = flock,
             MaxAcceleration = MAX_ACCELERATION,
             Radius = VelocityMatchingRadius,
-            FanAngle = VelocityMatchingFanAngle,
+            FanAngle = VelocityMatchingFanAngleRads,
+            FanAngleDegrees = VelocityMatchingFanAngleDegrees,
             Target = new KinematicData(),
             DebugGizmos = booleanDebugDrawGizmos
 

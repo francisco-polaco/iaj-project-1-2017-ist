@@ -52,31 +52,18 @@ public class DebugCharacterController : NormalCharacterController
                     var separation = movementWithWeight.Movement as DynamicSeparation;
                     if (separation != null)
                     {
-                        //Gizmos.color = separation.DebugColor;
                         UnityEditor.Handles.color = separation.DebugColor;
                         UnityEditor.Handles.DrawWireDisc(separation.Character.Position, cameraNormal,separation.Radius);
-
-
-                        
-                        //var direction = boidKinematicData.Position - Character.Position;
-                        //if (direction.magnitude <= Radius) {
-                        //var angle = MathHelper.ConvertVectorToOrientation(direction);
-                        //    var angleDifference = MathHelper.ShortestAngleDifference(Character.Orientation, angle);
-                        //    if (Math.Abs(angleDifference) <= FanAngle)
-
-
-                        //Gizmos.DrawWireSphere(separation.Character.Position, separation.Radius);
                     }
 
-                        var cohesion = movementWithWeight.Movement as DynamicCohesion;
+                    var cohesion = movementWithWeight.Movement as DynamicCohesion;
                     if (cohesion != null)
                     {
                         UnityEditor.Handles.color = cohesion.DebugColor;
                         UnityEditor.Handles.DrawWireDisc(cohesion.Character.Position, cameraNormal, cohesion.Radius);
 
-                        //Vector3 vector = (cohesion.Character.Position + cohesion.Character.velocity.normalized * cohesion.Radius);
-                        Vector3 rightVector = Quaternion.AngleAxis(cohesion.FanAngle, Vector3.up) * cohesion.Character.GetOrientationAsVector();
-                        Vector3 leftVector = Quaternion.AngleAxis(-cohesion.FanAngle, Vector3.up) * cohesion.Character.GetOrientationAsVector();
+                        Vector3 rightVector = Quaternion.AngleAxis(cohesion.FanAngleDegrees, Vector3.up) * cohesion.Character.GetOrientationAsVector();
+                        Vector3 leftVector = Quaternion.AngleAxis(-cohesion.FanAngleDegrees, Vector3.up) * cohesion.Character.GetOrientationAsVector();
 
                         var point1 = cohesion.Character.Position + rightVector.normalized * cohesion.Radius;
                         var point2 = cohesion.Character.Position + leftVector.normalized * cohesion.Radius;
@@ -85,8 +72,10 @@ public class DebugCharacterController : NormalCharacterController
 
                         if (cohesion.MassCenter != defaultito)
                         {
-                            UnityEditor.Handles.color = new Color(255f / 255f, 162f / 255f, 0);
+                            UnityEditor.Handles.color = cohesion.MassCenterColor;
                             UnityEditor.Handles.DrawWireDisc(cohesion.MassCenter,cameraNormal, 0.4f);
+                            Gizmos.color = cohesion.MassCenterColor;
+                            Gizmos.DrawSphere(cohesion.MassCenter, 0.4f);
                         }
                     }
                     var flockVelocityMatch = movementWithWeight.Movement as FlockVelocityMatching;
@@ -94,23 +83,26 @@ public class DebugCharacterController : NormalCharacterController
                         UnityEditor.Handles.color = flockVelocityMatch.DebugColor;
                         UnityEditor.Handles.DrawWireDisc(flockVelocityMatch.Character.Position, cameraNormal,flockVelocityMatch.Radius);
 
-                        Vector3 rightVector = Quaternion.AngleAxis(flockVelocityMatch.FanAngle, Vector3.up) * flockVelocityMatch.Character.GetOrientationAsVector();
-                        Vector3 leftVector = Quaternion.AngleAxis(-flockVelocityMatch.FanAngle, Vector3.up) * flockVelocityMatch.Character.GetOrientationAsVector();
+                        Vector3 rightVector = Quaternion.AngleAxis(flockVelocityMatch.FanAngleDegrees, Vector3.up) * flockVelocityMatch.Character.GetOrientationAsVector();
+                        Vector3 leftVector = Quaternion.AngleAxis(-flockVelocityMatch.FanAngleDegrees, Vector3.up) * flockVelocityMatch.Character.GetOrientationAsVector();
 
                         var point1 = flockVelocityMatch.Character.Position + rightVector.normalized * flockVelocityMatch.Radius;
                         var point2 = flockVelocityMatch.Character.Position + leftVector.normalized * flockVelocityMatch.Radius;
                         UnityEditor.Handles.DrawLine(flockVelocityMatch.Character.Position, point1);
                         UnityEditor.Handles.DrawLine(flockVelocityMatch.Character.Position, point2);
 
-
-
                         if (flockVelocityMatch.CurrentVelocity != defaultito) {
-                            Gizmos.color = new Color(139f / 255f, 69f / 255f, 19f / 255f);
+                            Gizmos.color = flockVelocityMatch.CurrentVelocityColor;
+                            //new Color(139f / 255f, 69f / 255f, 19f / 255f);
+
+                            ;
+
                             //Gizmos.DrawWireSphere(cohesion.MassCenter, 0.2f);
                             Gizmos.DrawLine(flockVelocityMatch.Character.Position, flockVelocityMatch.Character.Position + flockVelocityMatch.CurrentVelocity);
                         }
                         if (flockVelocityMatch.FlocksAverageVelocity != defaultito) {
-                            Gizmos.color = new Color(218f / 255f, 165f / 255f, 32f / 255f);
+                            Gizmos.color = flockVelocityMatch.FlocksAverageVelocityColor;
+                            //new Color(218f / 255f, 165f / 255f, 32f / 255f);
                             //Gizmos.DrawWireSphere(cohesion.MassCenter, 0.2f);
                             Gizmos.DrawLine(flockVelocityMatch.Character.Position, flockVelocityMatch.Character.Position + flockVelocityMatch.FlocksAverageVelocity);
                         }

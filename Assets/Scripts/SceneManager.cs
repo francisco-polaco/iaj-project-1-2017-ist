@@ -32,15 +32,12 @@ public class SceneManager : MonoBehaviour {
     // Use this for initialization
     void Start() {
 
-        //var textObj = GameObject.Find ("InstructionsText");
-        //if (textObj != null) 
-        //{
-        //	textObj.GetComponent<Text>().text = 
-        //		"Instructions\n\n" +
-        //		this.debugCharacterControllers.blendedKey + " - Blended\n" +
-        //		this.debugCharacterControllers.priorityKey + " - Priority\n"+
-        //              this.debugCharacterControllers.stopKey + " - Stop"; 
-        //}
+        var textObj = GameObject.Find ("InstructionsText");
+        if (textObj != null) 
+        {
+            textObj.GetComponent<Text>().text = "Colors\n\n" + "Verde - cohesion\n" + "Azul - VelocityMatch\n" + "Vermelho - Separation ";
+        		
+        }
 
 
         var obstacles = GameObject.FindGameObjectsWithTag("Obstacle");

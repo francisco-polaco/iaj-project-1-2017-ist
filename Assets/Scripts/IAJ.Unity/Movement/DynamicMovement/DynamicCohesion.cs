@@ -63,7 +63,7 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
                 foreach (var boid in massCenterFlocks)
                 {
 
-                    Debug.DrawLine(boid.KinematicData.Position, massCenter, this.DebugColor);
+                    Debug.DrawLine(boid.KinematicData.Position, massCenter, this.LinksBetweenBoidsColor);
 
                 }
                 //Gizmos.color = Color.HSVToRGB(30, 97, 99);
@@ -79,13 +79,15 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
         public float Radius { get; set; }
 
-        public float FanAngle { get; set; }
+        public double FanAngle { get; set; }
 
         public Flock Flock { get; set; }
 
         public Boolean DebugGizmos { get; set; }
         public Vector3 MassCenter { get; set; }
-
+        public Color MassCenterColor { get; internal set; }
+        public Color LinksBetweenBoidsColor { get; internal set; }
+        public float FanAngleDegrees { get; internal set; }
     }
 
 

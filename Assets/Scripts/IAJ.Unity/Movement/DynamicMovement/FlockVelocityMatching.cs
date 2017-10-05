@@ -28,10 +28,10 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
                     if (direction.magnitude <= Radius)
                     {
-                        var angle = MathHelper.ConvertVectorToOrientation(direction);
+                        var directonVector = MathHelper.ConvertVectorToOrientation(direction);
 
                         var angleDifference = 
-                            MathHelper.ShortestAngleDifference(Character.Orientation, angle);
+                        MathHelper.ShortestAngleDifference(Character.Orientation, directonVector);
                         if (Math.Abs(angleDifference) <= FanAngle)
                         {
                             averageVelocity += boidKinematicData.velocity;
@@ -58,13 +58,15 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
         public float Radius { get; set; }
 
-        public float FanAngle { get; set; }
+        public double FanAngle { get; set; }
 
         public Flock Flock { get; set; }
 
         public Vector3 FlocksAverageVelocity { get; set; }
         public Vector3 CurrentVelocity { get; set; }
         public Boolean DebugGizmos { get; set; }
-
+        public Color CurrentVelocityColor { get; internal set; }
+        public Color FlocksAverageVelocityColor { get; internal set; }
+        public float FanAngleDegrees { get; internal set; }
     }
 }
