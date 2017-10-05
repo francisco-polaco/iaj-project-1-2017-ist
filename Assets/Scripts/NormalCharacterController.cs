@@ -12,7 +12,8 @@ public class NormalCharacterController : MonoBehaviour {
 
     public const float XWorldSize = 55;
     public const float ZWorldSize = 32.5f;
-    private const float MaxAcceleration = 80.0f;
+    private const float MaxAcceleration = 160f;
+    private const float AvoidObstacleMaxAcceleration = MaxAcceleration*2;
 
     private const float AvoidMargin = 5;
     private const float MaxLookAhead = 10f;
@@ -21,7 +22,7 @@ public class NormalCharacterController : MonoBehaviour {
     private const float CohesionWeight = 10f;
     private const float FlockVelocityMatchingWeight = 20f;
     private const float SeparationWeight = 10f;
-    private const float MouseSeekPressedWeight = 105f;
+    private const float MouseSeekPressedWeight = 10f;
 
     private const float MouseSeekDefaultWeight = 0f;
     private const float StraightAheadDefaultWeight = MouseSeekPressedWeight;
@@ -173,7 +174,7 @@ public class NormalCharacterController : MonoBehaviour {
         {
             var avoidObstacleMovement = new DynamicAvoidObstacle(obstacle)
             {
-                MaxAcceleration = MaxAcceleration,
+                MaxAcceleration = AvoidObstacleMaxAcceleration,
                 AvoidMargin = AvoidMargin,
                 MaxLookAhead = MaxLookAhead,
                 Character = this.Character.KinematicData,
@@ -196,6 +197,10 @@ public class NormalCharacterController : MonoBehaviour {
         Update2();
     }
 
+    private Vector3 mouseOnWorld = new Vector3();
+    private Vector3 defaultito = new Vector3();
+
+
     protected virtual void Update2()
     {
         if (Input.GetMouseButtonDown(LeftClickKey))
@@ -209,22 +214,35 @@ public class NormalCharacterController : MonoBehaviour {
             this.BlendedMovement.Movements[MouseSeekListIndex].Weight = MouseSeekDefaultWeight;
             this.BlendedMovement.Movements[StraightAheadIndex].Weight = StraightAheadDefaultWeight;
             _toUpdateMousePosition = false;
+            mouseOnWorld = new Vector3();
         }
 
         if (_toUpdateMousePosition)
         {
             Camera c = Camera.main;
             Vector3 mousePosition = Input.mousePosition;
-            Vector3 mouseOnWorld = c.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y,
+            mouseOnWorld = c.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y,
                 c.transform.position.y));
             mouseOnWorld.y = 0;
+
             this.BlendedMovement.Movements[MouseSeekListIndex].Movement.Target = new KinematicData(new StaticData
             {
                 Position = mouseOnWorld
             });
+
         }
+       
 
         this.UpdateMovingGameObject();
+    }
+
+    void OnDrawGizmos()
+    {
+        if (mouseOnWorld != defaultito)
+        {
+            Gizmos.color = Color.black;
+            Gizmos.DrawSphere(mouseOnWorld, 0.5f);
+        }
     }
 
 
