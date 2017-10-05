@@ -17,6 +17,7 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
 
         public float MaxLookAhead { get; set; }
         public float AvoidMargin { get; set; }
+        public Boolean DebugGizmos { get; set; }
 
         public DynamicAvoidObstacle()
         {
@@ -35,31 +36,32 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
             Vector3 characterOrientation = Character.GetOrientationAsVector();
             var rayOrigin = Character.Position;
 
-            //if (Math.Abs((_obstacle.transform.localPosition - Character.Position).magnitude) < 0.3f)
-            //{
-            //    _counter++;
-            //    Debug.Log("Obstacle: " +_counter);
-            //}
-
             // Main Ray
             Ray mainRayVector = new Ray(rayOrigin, characterOrientation);
-            //Debug.DrawLine(rayOrigin, rayOrigin + characterOrientation * MaxLookAhead, Color.black);
             RaycastHit mainRaycastHit;
             bool mainResult = _collider.Raycast(mainRayVector, out mainRaycastHit, MaxLookAhead);
 
             // left ray
             Vector3 leftVector = Quaternion.AngleAxis(-Angle, Vector3.up) * characterOrientation;
             Ray leftRayVector = new Ray(rayOrigin, leftVector);
-            //Debug.DrawLine(rayOrigin, rayOrigin + leftVector*MaxLookAhead/2, Color.black);
             RaycastHit leftRaycastHit;
             bool leftResult = _collider.Raycast(leftRayVector, out leftRaycastHit, MaxLookAhead / 4);
             
             // right ray
             Vector3 rightVector = Quaternion.AngleAxis(Angle, Vector3.up) * characterOrientation;
             Ray rightRayVector = new Ray(rayOrigin, rightVector);
-            //Debug.DrawLine(rayOrigin, rayOrigin + rightVector * MaxLookAhead / 2, Color.black);
             RaycastHit rightRaycastHit;
             bool rightResult = _collider.Raycast(rightRayVector, out rightRaycastHit, MaxLookAhead / 4);
+
+            if (DebugGizmos)
+            {
+                //main
+                Debug.DrawLine(rayOrigin, rayOrigin + characterOrientation * MaxLookAhead, Color.black);
+                //left
+                Debug.DrawLine(rayOrigin, rayOrigin + leftVector * MaxLookAhead / 2, Color.black);
+                //right
+                Debug.DrawLine(rayOrigin, rayOrigin + rightVector * MaxLookAhead / 2, Color.black);
+            }
 
             if (mainResult) {
                 // Debug.Log("Entrei main");
@@ -75,7 +77,9 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
                 // Debug.Log("Entrei right");
                 this.Target = new KinematicData { Position = rightRaycastHit.point + rightRaycastHit.normal * AvoidMargin };
             }
-            else {
+            else
+            {
+                this.Target = null;
                 return new MovementOutput();
             }
             return base.GetMovement();

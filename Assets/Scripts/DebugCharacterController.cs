@@ -15,6 +15,8 @@ public class DebugCharacterController : NormalCharacterController
     private const KeyCode CohesionKeyDeactivate = KeyCode.D;
     private const KeyCode VelocityMatchingKeyActivate = KeyCode.V;
     private const KeyCode VelocityMatchingKeyDeactivate = KeyCode.F;
+    private const KeyCode AvoidObstacleKeyActivate = KeyCode.Z;
+    private const KeyCode AvoidObstacleKeyDeactivate = KeyCode.A;
 
     void Awake()
     {
@@ -101,17 +103,18 @@ public class DebugCharacterController : NormalCharacterController
                     }
 
 
-                    //var avoidObstacle = movementWithWeight.Movement as DynamicAvoidObstacle;
-                    //if (avoidObstacle != null)
-                    //{
-                    //    Gizmos.color = avoidObstacle.DebugColor;
-                    //    if (!object.ReferenceEquals(avoidObstacle.Target, null))
-                    //    {
-                    //        Gizmos.DrawWireSphere(avoidObstacle.Target.Position, 5f);
-                    //        Gizmos.color = Color.cyan;
-                    //        Gizmos.DrawWireSphere(avoidObstacle.Target.Position, avoidObstacle.AvoidMargin);
-                    //    }
-                    //}
+                    var avoidObstacle = movementWithWeight.Movement as DynamicAvoidObstacle;
+                    if (avoidObstacle != null && avoidObstacle.DebugGizmos)
+                    {
+                        UnityEditor.Handles.color = avoidObstacle.DebugColor;
+                        UnityEditor.Handles.DrawWireDisc(avoidObstacle.Character.Position, _cameraNormal, avoidObstacle.AvoidMargin);
+                        if (!object.ReferenceEquals(avoidObstacle.Target, null))
+                        {
+                            Gizmos.color = avoidObstacle.DebugColor;
+                            Gizmos.DrawWireSphere(avoidObstacle.Target.Position, 0.5f);
+
+                        }
+                    }
                 }
             }
         }
@@ -148,6 +151,22 @@ public class DebugCharacterController : NormalCharacterController
         {
             var mov = this.BlendedMovement.Movements[FlockVelocityMatchingIndex].Movement as DynamicFlockVelocityMatching;
             mov.DebugGizmos = false;
+        }
+        if (Input.GetKeyDown(AvoidObstacleKeyDeactivate))
+        {
+            for (int i = AvoidObstacleStartIndex; i < this.BlendedMovement.Movements.Count; i++)
+            {
+                var mov = this.BlendedMovement.Movements[i].Movement as DynamicAvoidObstacle;
+                mov.DebugGizmos = false;
+            }
+        }
+        if (Input.GetKeyDown(AvoidObstacleKeyActivate))
+        {
+            for (int i = AvoidObstacleStartIndex; i < this.BlendedMovement.Movements.Count; i++)
+            {
+                var mov = this.BlendedMovement.Movements[i].Movement as DynamicAvoidObstacle;
+                mov.DebugGizmos = true;
+            }
         }
 
         base.Update2();
