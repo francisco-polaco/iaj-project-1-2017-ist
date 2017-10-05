@@ -26,19 +26,19 @@ public class DebugCharacterController : NormalCharacterController
     void Awake()
     {
         
-        this.character = new DynamicCharacter(this.gameObject);
+        this.Character = new DynamicCharacter(this.gameObject);
     
-        this.blendedMovement = new BlendedMovement
+        this.BlendedMovement = new BlendedMovement
         {
-            Character = this.character.KinematicData
+            Character = this.Character.KinematicData
         };
     }
     void OnDrawGizmos()
     {
         //TODO: this code is not working, try to figure it out
-        if (this.character != null && this.character.Movement != null)
+        if (this.Character != null && this.Character.Movement != null)
         {
-            BlendedMovement blendedMov = this.character.Movement as BlendedMovement;
+            BlendedMovement blendedMov = this.Character.Movement as BlendedMovement;
             if (blendedMov != null)
             {
                 foreach (var movementWithWeight in blendedMov.Movements)

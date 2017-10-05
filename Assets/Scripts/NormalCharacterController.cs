@@ -10,14 +10,12 @@ using Assets.Scripts.IAJ.Unity.Movement;
 
 public class NormalCharacterController : MonoBehaviour {
 
-    public const float X_WORLD_SIZE = 55;
-    public const float Z_WORLD_SIZE = 32.5f;
-    private const float MAX_ACCELERATION = 80.0f;
-    private const float MAX_SPEED = 20.0f;
-    private const float DRAG = 0.1f;
+    public const float XWorldSize = 55;
+    public const float ZWorldSize = 32.5f;
+    private const float MaxAcceleration = 80.0f;
 
-    private const float AVOID_MARGIN = 5;
-    private const float MAX_LOOK_AHEAD = 10f;
+    private const float AvoidMargin = 5;
+    private const float MaxLookAhead = 10f;
 
     private const float AvoidObstacleWeight = 50f;
     private const float CohesionWeight = 10f;
@@ -32,16 +30,10 @@ public class NormalCharacterController : MonoBehaviour {
     private const int StraightAheadIndex = 1;
     private const int LeftClickKey = 0; // 0 = left click
 
-    public KeyCode stopKey = KeyCode.S;
-    public KeyCode priorityKey = KeyCode.P;
-    public KeyCode blendedKey = KeyCode.B;
+    public DynamicCharacter Character;
 
-    public GameObject movementText;
-    public DynamicCharacter character;
+    public BlendedMovement BlendedMovement;
 
-    public BlendedMovement blendedMovement;
-
-    private Text movementTextText;
     private bool _toUpdateMousePosition = false;
 
     private float SeparationRadius = 15f;
@@ -57,21 +49,20 @@ public class NormalCharacterController : MonoBehaviour {
     //early initialization
     void Awake()
     {
-        this.character = new DynamicCharacter(this.gameObject);
-        this.movementTextText = this.movementText.GetComponent<Text>();
+        this.Character = new DynamicCharacter(this.gameObject);
 
-        this.blendedMovement = new BlendedMovement
+        this.BlendedMovement = new BlendedMovement
         {
-            Character = this.character.KinematicData
+            Character = this.Character.KinematicData
         };
-        this.character.Movement = this.blendedMovement;
+        this.Character.Movement = this.BlendedMovement;
     }
 
-    void resetBlended() {
-        this.blendedMovement = new BlendedMovement {
-            Character = this.character.KinematicData
+    void ResetBlended() {
+        this.BlendedMovement = new BlendedMovement {
+            Character = this.Character.KinematicData
         };
-        this.character.Movement = this.blendedMovement;
+        this.Character.Movement = this.BlendedMovement;
     }
 
     // Use this for initialization
@@ -81,19 +72,19 @@ public class NormalCharacterController : MonoBehaviour {
 
     public void InitializeMovement(GameObject[] obstacles, List<DynamicCharacter> characters, bool booleanDebugDrawGizmos)
     {
-        resetBlended();
+        ResetBlended();
 
         foreach (var obstacle in obstacles)
         {
             var avoidObstacleMovement = new DynamicAvoidObstacle(obstacle)
             {
-                MaxAcceleration = MAX_ACCELERATION,
-                AvoidMargin = AVOID_MARGIN,
-                MaxLookAhead = MAX_LOOK_AHEAD,
-                Character = this.character.KinematicData,
+                MaxAcceleration = MaxAcceleration,
+                AvoidMargin = AvoidMargin,
+                MaxLookAhead = MaxLookAhead,
+                Character = this.Character.KinematicData,
                 DebugColor = Color.magenta
             };
-            this.blendedMovement.Movements.Add(new MovementWithWeight(avoidObstacleMovement, AvoidObstacleWeight));
+            this.BlendedMovement.Movements.Add(new MovementWithWeight(avoidObstacleMovement, AvoidObstacleWeight));
         }
 
         Flock flock = new Flock
@@ -103,23 +94,23 @@ public class NormalCharacterController : MonoBehaviour {
 
         var separation = new DynamicSeparation
         {
-            Character = this.character.KinematicData,
+            Character = this.Character.KinematicData,
             DebugColor = Color.HSVToRGB(0.5f, 0.5f, 0.5f),
             Flock = flock,
-            MaxAcceleration = MAX_ACCELERATION,
+            MaxAcceleration = MaxAcceleration,
             Radius = SeparationRadius,
             SeparationFactor = SeparationFactor,
             DebugGizmos = booleanDebugDrawGizmos,
 
         };
-        this.blendedMovement.Movements.Add(new MovementWithWeight(separation, SeparationWeight));
+        this.BlendedMovement.Movements.Add(new MovementWithWeight(separation, SeparationWeight));
 
         var cohesion = new DynamicCohesion
         {
-            Character = this.character.KinematicData,
+            Character = this.Character.KinematicData,
             DebugColor = Color.HSVToRGB(0.6f, 0.6f, 0.6f),
             Flock = flock,
-            MaxAcceleration = MAX_ACCELERATION,
+            MaxAcceleration = MaxAcceleration,
             Radius = CohesionRadius,
             FanAngle = CohesionFanAngle,
             Target = new KinematicData(),
@@ -127,67 +118,59 @@ public class NormalCharacterController : MonoBehaviour {
             DebugGizmos = booleanDebugDrawGizmos
 
         };
-        this.blendedMovement.Movements.Add(new MovementWithWeight(cohesion, CohesionWeight));
+        this.BlendedMovement.Movements.Add(new MovementWithWeight(cohesion, CohesionWeight));
 
         var flockVelocityMatching = new FlockVelocityMatching
         {
-            Character = this.character.KinematicData,
+            Character = this.Character.KinematicData,
             DebugColor = Color.HSVToRGB(0.6f, 0.6f, 0.6f),
             Flock = flock,
-            MaxAcceleration = MAX_ACCELERATION,
+            MaxAcceleration = MaxAcceleration,
             Radius = VelocityMatchingRadius,
             FanAngle = VelocityMatchingFanAngle,
             Target = new KinematicData(),
             DebugGizmos = booleanDebugDrawGizmos
 
         };
-        this.blendedMovement.Movements.Add(new MovementWithWeight(flockVelocityMatching, 
+        this.BlendedMovement.Movements.Add(new MovementWithWeight(flockVelocityMatching, 
             FlockVelocityMatchingWeight));
 
 
         var dynamicSeek = new DynamicSeek
         {
-            Character = character.KinematicData,
+            Character = Character.KinematicData,
             Target = new KinematicData(),
-            MaxAcceleration = MAX_ACCELERATION
+            MaxAcceleration = MaxAcceleration
         };
 
-        blendedMovement.Movements.Insert(MouseSeekListIndex, new MovementWithWeight(dynamicSeek, MouseSeekDefaultWeight));
+        BlendedMovement.Movements.Insert(MouseSeekListIndex, new MovementWithWeight(dynamicSeek, MouseSeekDefaultWeight));
 
 
         var straightAhead = new DynamicStraightAhead
         {
-            Character = this.character.KinematicData,
-            MaxAcceleration = MAX_ACCELERATION,
+            Character = this.Character.KinematicData,
+            MaxAcceleration = MaxAcceleration,
             DebugColor = Color.yellow
         };
 
-        this.blendedMovement.Movements.Insert(StraightAheadIndex, new MovementWithWeight(straightAhead, StraightAheadDefaultWeight));
-        this.character.Movement = this.blendedMovement;
+        this.BlendedMovement.Movements.Insert(StraightAheadIndex, new MovementWithWeight(straightAhead, StraightAheadDefaultWeight));
+        this.Character.Movement = this.BlendedMovement;
     }
 
 
 
     void Update()
     {
-        if (Input.GetKeyDown(this.stopKey))
+        if (Input.GetMouseButtonDown(LeftClickKey))
         {
-            this.character.Movement = null;
-        }
-        else if (Input.GetKeyDown(this.blendedKey))
-        {
-            this.character.Movement = this.blendedMovement;
-        }
-        else if (Input.GetMouseButtonDown(LeftClickKey))
-        {
-            this.blendedMovement.Movements[MouseSeekListIndex].Weight = MouseSeekPressedWeight;
-            this.blendedMovement.Movements[StraightAheadIndex].Weight = StraightAheadPressedWeight;
+            this.BlendedMovement.Movements[MouseSeekListIndex].Weight = MouseSeekPressedWeight;
+            this.BlendedMovement.Movements[StraightAheadIndex].Weight = StraightAheadPressedWeight;
             _toUpdateMousePosition = true;
         }
         else if (Input.GetMouseButtonUp(LeftClickKey))
         {
-            this.blendedMovement.Movements[MouseSeekListIndex].Weight = MouseSeekDefaultWeight;
-            this.blendedMovement.Movements[StraightAheadIndex].Weight = StraightAheadDefaultWeight;
+            this.BlendedMovement.Movements[MouseSeekListIndex].Weight = MouseSeekDefaultWeight;
+            this.BlendedMovement.Movements[StraightAheadIndex].Weight = StraightAheadDefaultWeight;
             _toUpdateMousePosition = false;
         }
 
@@ -198,39 +181,24 @@ public class NormalCharacterController : MonoBehaviour {
             Vector3 mouseOnWorld = c.ScreenToWorldPoint(new Vector3(mousePosition.x, mousePosition.y,
                 c.transform.position.y));
             mouseOnWorld.y = 0;
-            this.blendedMovement.Movements[MouseSeekListIndex].Movement.Target = new KinematicData(new StaticData
+            this.BlendedMovement.Movements[MouseSeekListIndex].Movement.Target = new KinematicData(new StaticData
             {
                 Position = mouseOnWorld
             });
         }
 
         this.UpdateMovingGameObject();
-        this.UpdateMovementText();
     }
 
-
-    
 
     private void UpdateMovingGameObject()
     {
-        if (character != null && this.character.Movement != null)
+        if (Character != null && this.Character.Movement != null)
         {
-            this.character.Update();
-            this.character.KinematicData.ApplyWorldLimit(X_WORLD_SIZE, Z_WORLD_SIZE);
+            this.Character.Update();
+            this.Character.KinematicData.ApplyWorldLimit(XWorldSize, ZWorldSize);
         }
     }
-
-    private void UpdateMovementText()
-    {
-        //if (character != null && this.character.Movement == null)
-        //{
-        //    this.movementTextText.text = this.name + " Movement: Stationary";
-        //}
-        //else
-        //{
-        //    this.movementTextText.text = this.name + " Movement: " + this.character.Movement.Name;
-        //}
-    } 
 
 }
 
