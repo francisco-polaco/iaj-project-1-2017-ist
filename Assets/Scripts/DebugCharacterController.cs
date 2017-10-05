@@ -43,12 +43,12 @@ public class DebugCharacterController : NormalCharacterController
             {
                 foreach (var movementWithWeight in blendedMov.Movements)
                 {
-                    var wander = movementWithWeight.Movement as DynamicWander;
-                    if (wander != null)
-                    {
-                        UnityEditor.Handles.color = wander.DebugColor;
-                        UnityEditor.Handles.DrawWireDisc(wander.CircleCenter, cameraNormal,wander.WanderRadius);
-                    }
+                    //var wander = movementWithWeight.Movement as DynamicWander;
+                    //if (wander != null)
+                    //{
+                    //    UnityEditor.Handles.color = wander.DebugColor;
+                    //    UnityEditor.Handles.DrawWireDisc(wander.CircleCenter, cameraNormal,wander.WanderRadius);
+                    //}
                     var separation = movementWithWeight.Movement as DynamicSeparation;
                     if (separation != null)
                     {
