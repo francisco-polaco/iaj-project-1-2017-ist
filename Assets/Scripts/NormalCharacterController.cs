@@ -10,16 +10,16 @@ using Assets.Scripts.IAJ.Unity.Movement;
 
 public class NormalCharacterController : MonoBehaviour {
 
-    public const float XWorldSize = 55;
-    public const float ZWorldSize = 32.5f;
-    private const float MaxAcceleration = 160f;
+    public const float XWorldSize = 550f/3;
+    public const float ZWorldSize = 325f/5;
+    private const float MaxAcceleration = 80f;
     private const float AvoidObstacleMaxAcceleration = MaxAcceleration*2;
 
     private const float AvoidMargin = 5;
     private const float MaxLookAhead = 10f;
 
     private const float AvoidObstacleWeight = 30f;
-    private const float CohesionWeight = 10f;
+    private const float CohesionWeight = 15f;
     private const float FlockVelocityMatchingWeight = 20f;
     private const float SeparationWeight = 10f;
     private const float MouseSeekPressedWeight = 10f;

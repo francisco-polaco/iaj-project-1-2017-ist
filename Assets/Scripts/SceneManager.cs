@@ -6,8 +6,8 @@ using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class SceneManager : MonoBehaviour {
-    public const float XWorldSize = 55;
-    public const float ZWorldSize = 32.5f;
+    public const float XWorldSize = 550f/3;
+    public const float ZWorldSize = 325f/5;
     public float AvoidMargin = 20f;
 
     public int NumberOfNormalCharacters = 5; 
@@ -51,7 +51,7 @@ public class SceneManager : MonoBehaviour {
             var characterController = this.NormalCharacterGameObject.GetComponent<NormalCharacterController>();
             this._normalCharacterControllers.Insert(0, this.NormalCharacterGameObject.GetComponent<NormalCharacterController>());
             characterController.Character.KinematicData.Position = this.GenerateRandomClearPosition(_characters);
-            characterController.Character.KinematicData.SetOrientationFromVelocity((new Vector3(Random.Range(-1, 1), 0, Random.Range(-1, 1))));
+            characterController.Character.KinematicData.SetOrientationFromVelocity((new Vector3(Random.Range(-100, 100), 0, Random.Range(-100, 100))));
 
         }
         else {
