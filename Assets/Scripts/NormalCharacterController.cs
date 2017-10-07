@@ -102,7 +102,9 @@ public class NormalCharacterController : MonoBehaviour {
         {
             Character = Character.KinematicData,
             Target = new KinematicData(),
-            MaxAcceleration = MaxAcceleration
+            MaxAcceleration = MaxAcceleration,
+            OutputDebug = booleanDebugDrawGizmos,
+            OutputDebugColor = Color.black,
         };
         BlendedMovement.Movements.Insert(MouseSeekListIndex, new MovementWithWeight(dynamicSeek, MouseSeekDefaultWeight));
 
@@ -110,7 +112,9 @@ public class NormalCharacterController : MonoBehaviour {
         {
             Character = this.Character.KinematicData,
             MaxAcceleration = MaxAcceleration,
-            DebugColor = Color.yellow
+            DebugColor = Color.yellow,
+            OutputDebug = booleanDebugDrawGizmos,
+            OutputDebugColor = Color.black,
         };
         this.BlendedMovement.Movements.Insert(StraightAheadIndex, new MovementWithWeight(straightAhead, StraightAheadDefaultWeight));
 
@@ -136,6 +140,8 @@ public class NormalCharacterController : MonoBehaviour {
             Radius = SeparationRadius,
             SeparationFactor = SeparationFactor,
             DebugGizmos = booleanDebugDrawGizmos,
+            OutputDebug = booleanDebugDrawGizmos,
+            OutputDebugColor = _separationColor,
 
         };
         this.BlendedMovement.Movements.Insert(SeparationIndex, new MovementWithWeight(separation, SeparationWeight));
@@ -152,7 +158,10 @@ public class NormalCharacterController : MonoBehaviour {
             FanAngleDegrees = CohesionFanAngleDegrees,
             Target = new KinematicData(),
             RealTarget = new KinematicData(),
-            DebugGizmos = booleanDebugDrawGizmos
+            DebugGizmos = booleanDebugDrawGizmos,
+            OutputDebug = booleanDebugDrawGizmos,
+            OutputDebugColor = _cohesionColor,
+
 
         };
         this.BlendedMovement.Movements.Insert(CohesionIndex, new MovementWithWeight(cohesion, CohesionWeight));
@@ -168,7 +177,10 @@ public class NormalCharacterController : MonoBehaviour {
             FanAngle = _velocityMatchingFanAngleRads,
             FanAngleDegrees = VelocityMatchingFanAngleDegrees,
             Target = new KinematicData(),
-            DebugGizmos = booleanDebugDrawGizmos
+            OutputDebug = booleanDebugDrawGizmos,
+            DebugGizmos = booleanDebugDrawGizmos,
+            OutputDebugColor = _velocityMatchColor,
+
 
         };
         this.BlendedMovement.Movements.Insert(FlockVelocityMatchingIndex, new MovementWithWeight(flockVelocityMatching, 
@@ -184,7 +196,9 @@ public class NormalCharacterController : MonoBehaviour {
                 MaxLookAhead = MaxLookAhead,
                 Character = this.Character.KinematicData,
                 DebugColor = Color.magenta,
-                DebugGizmos = booleanDebugDrawGizmos
+                DebugGizmos = booleanDebugDrawGizmos,
+                OutputDebug = booleanDebugDrawGizmos,
+                OutputDebugColor = Color.magenta,
             };
             this.BlendedMovement.Movements.Add(new MovementWithWeight(avoidObstacleMovement, AvoidObstacleWeight));
         }
