@@ -6,8 +6,8 @@ using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class SceneManager : MonoBehaviour {
-    public const float XWorldSize = 550f/3;
-    public const float ZWorldSize = 325f/5;
+    public const float xWorldSize = 550f / 6;
+    public const float zWorldSize = 325f / 7;
     public float AvoidMargin = 20f;
 
     public int NumberOfNormalCharacters = 5; 
@@ -21,6 +21,18 @@ public class SceneManager : MonoBehaviour {
     private List<NormalCharacterController> _normalCharacterControllers;
 
     private List<GameObject> _characters;
+
+    //public static float XWorldSize {
+    //    get {
+    //        return xWorldSize;
+    //    }
+    //}
+
+    //public static float ZWorldSize {
+    //    get {
+    //        return zWorldSize;
+    //    }
+    //}
 
 
     // Use this for initialization
@@ -123,7 +135,7 @@ public class SceneManager : MonoBehaviour {
             }
             ok = true;
 
-            position = new Vector3(Random.Range(-XWorldSize, XWorldSize), 0, Random.Range(-ZWorldSize, ZWorldSize));
+            position = new Vector3(Random.Range(-xWorldSize, xWorldSize), 0, Random.Range(-zWorldSize, zWorldSize));
 
             foreach (var obstacle in obstacles) {
                 var distance = (position - obstacle.transform.position).magnitude;
@@ -164,4 +176,19 @@ public class SceneManager : MonoBehaviour {
 
         Start();
     }
+
+    void OnDrawGizmos() {
+      Gizmos.color = Color.black;
+
+      var UR = new Vector3(xWorldSize-1f , 0, zWorldSize-1f );
+      var UL = new Vector3(-xWorldSize +1f, 0, zWorldSize-1f );
+      var LR = new Vector3(xWorldSize-1f , 0, -zWorldSize+1f );
+      var LL = new Vector3(-xWorldSize+1f , 0, -zWorldSize+1f );
+
+      Gizmos.DrawLine(UR,UL);
+      Gizmos.DrawLine(UR,LR);
+      Gizmos.DrawLine(LL,UL);
+      Gizmos.DrawLine(LL,LR);
+    }
+
 }

@@ -10,23 +10,23 @@ using Assets.Scripts.IAJ.Unity.Movement;
 
 public class NormalCharacterController : MonoBehaviour {
 
-    public const float XWorldSize = 550f/3;
-    public const float ZWorldSize = 325f/5;
+    protected float XWorldSize = SceneManager.xWorldSize;
+    protected float ZWorldSize = SceneManager.zWorldSize;
     private const float MaxAcceleration = 80f;
     private const float AvoidObstacleMaxAcceleration = MaxAcceleration*2;
 
     private const float AvoidMargin = 5;
     private const float MaxLookAhead = 10f;
 
-    private const float AvoidObstacleWeight = 30f;
-    private const float CohesionWeight = 15f;
-    private const float FlockVelocityMatchingWeight = 20f;
-    private const float SeparationWeight = 10f;
-    private const float MouseSeekPressedWeight = 10f;
+    private const float AvoidObstacleWeight = 100f;
+    private const float CohesionWeight = 10f;
+    private const float FlockVelocityMatchingWeight = 30f;
+    private const float SeparationWeight = 30f;
+    private const float MouseSeekPressedWeight = 20f;
 
     private const float MouseSeekDefaultWeight = 0f;
-    private const float StraightAheadDefaultWeight = MouseSeekPressedWeight;
-    private const float StraightAheadPressedWeight = MouseSeekDefaultWeight;
+    private const float StraightAheadDefaultWeight = 5f;
+    private const float StraightAheadPressedWeight = 0f;
 
     protected const int MouseSeekListIndex = 0;
     protected const int StraightAheadIndex = 1;
@@ -44,17 +44,17 @@ public class NormalCharacterController : MonoBehaviour {
 
     private bool _toUpdateMousePosition = false;
 
-    private const float SeparationRadius = 10f;
-    private const float SeparationFactor = 20f;
+    private const float SeparationRadius = 5f;
+    private const float SeparationFactor = 250f;
 
-    private const float CohesionRadius = 25f;
+    private const float CohesionRadius = 30f;
 
     private const float CohesionFanAngleDegrees = 100f;
     private readonly double _cohesionFanAngleRads = MathHelper.NormalDegreeToRadian(CohesionFanAngleDegrees);
 
     private const float VelocityMatchingFanAngleDegrees = 60f;
     private readonly double _velocityMatchingFanAngleRads = MathHelper.NormalDegreeToRadian(VelocityMatchingFanAngleDegrees);
-    private const float VelocityMatchingRadius = 25f;
+    private const float VelocityMatchingRadius = 20f;
 
     private readonly Color _separationColor = new Color(255 / 255f, 0f / 255f, 0 / 255f); //red
     private readonly Color _separationLinksBetweenBoidsColor = new Color(165/255f,42/255f,42/255f);
@@ -136,7 +136,7 @@ public class NormalCharacterController : MonoBehaviour {
             LinksBetweenBoidsColor = _separationLinksBetweenBoidsColor,
             Character = this.Character.KinematicData,
             Flock = flock,
-            MaxAcceleration = AvoidObstacleMaxAcceleration,
+            MaxAcceleration = AvoidObstacleMaxAcceleration*3,
             Radius = SeparationRadius,
             SeparationFactor = SeparationFactor,
             DebugGizmos = booleanDebugDrawGizmos,
@@ -161,6 +161,10 @@ public class NormalCharacterController : MonoBehaviour {
             DebugGizmos = booleanDebugDrawGizmos,
             OutputDebug = booleanDebugDrawGizmos,
             OutputDebugColor = _cohesionColor,
+            SlowRadius = 10f,
+            StopRadius = 1f,
+            MaxSpeed = MaxAcceleration
+
 
 
         };
@@ -189,8 +193,7 @@ public class NormalCharacterController : MonoBehaviour {
 
         foreach (var obstacle in obstacles)
         {
-            var avoidObstacleMovement = new DynamicAvoidObstacle(obstacle)
-            {
+            var avoidObstacleMovement = new DynamicAvoidObstacle(obstacle) {
                 MaxAcceleration = AvoidObstacleMaxAcceleration,
                 AvoidMargin = AvoidMargin,
                 MaxLookAhead = MaxLookAhead,
@@ -199,6 +202,7 @@ public class NormalCharacterController : MonoBehaviour {
                 DebugGizmos = booleanDebugDrawGizmos,
                 OutputDebug = booleanDebugDrawGizmos,
                 OutputDebugColor = Color.magenta,
+                SideDecreaseFactor = 2f,
             };
             this.BlendedMovement.Movements.Add(new MovementWithWeight(avoidObstacleMovement, AvoidObstacleWeight));
         }

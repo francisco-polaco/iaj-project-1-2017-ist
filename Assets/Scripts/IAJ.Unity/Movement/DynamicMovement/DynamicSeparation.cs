@@ -36,19 +36,19 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
                     Output.linear += direction * separationStrength;
 
 
-                    if (DebugGizmos)
-                    {  
-                        Debug.DrawLine(boid.KinematicData.Position, Character.Position, this.LinksBetweenBoidsColor);
-                    }
+                    //if (DebugGizmos)
+                    //{  
+                    //    Debug.DrawLine(boid.KinematicData.Position, Character.Position, this.LinksBetweenBoidsColor);
+                    //}
                 }
                 
             }
 
 
-            if (DebugGizmos)
-            {
-                Debug.DrawLine(Character.Position, Character.Position + Output.linear, this.AccelarionColor);
-            }
+            //if (DebugGizmos)
+            //{
+            //    Debug.DrawLine(Character.Position, Character.Position + Output.linear, this.AccelarionColor);
+            //}
 
 
             if (Output.linear.magnitude > MaxAcceleration)

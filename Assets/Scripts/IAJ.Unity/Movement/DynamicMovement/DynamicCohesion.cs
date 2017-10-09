@@ -51,12 +51,12 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
             massCenter /= closeBoids;
             if (DebugGizmos)
             {
-                foreach (var boid in massCenterFlocks)
-                {
+                //foreach (var boid in massCenterFlocks)
+                //{
 
-                    Debug.DrawLine(boid.KinematicData.Position, massCenter, this.LinksBetweenBoidsColor);
+                //    Debug.DrawLine(boid.KinematicData.Position, massCenter, this.LinksBetweenBoidsColor);
 
-                }
+                //}
                 //Gizmos.color = Color.HSVToRGB(30, 97, 99);
                 // Gizmos.DrawWireSphere(massCenter, 2);
                 //Debug.DrawLine(Character.Position, massCenter, Color.blue);

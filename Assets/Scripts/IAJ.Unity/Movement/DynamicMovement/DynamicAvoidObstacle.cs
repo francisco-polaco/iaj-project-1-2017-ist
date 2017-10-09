@@ -18,6 +18,7 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
         public float MaxLookAhead { get; set; }
         public float AvoidMargin { get; set; }
         public Boolean DebugGizmos { get; set; }
+        public float SideDecreaseFactor { get; set; }
 
         public DynamicAvoidObstacle()
         {
@@ -32,6 +33,7 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
         public override MovementOutput GetMovement()
         {
             
+            
 
             Vector3 characterOrientation = Character.GetOrientationAsVector();
             var rayOrigin = Character.Position;
@@ -45,22 +47,22 @@ namespace Assets.Scripts.IAJ.Unity.Movement.DynamicMovement
             Vector3 leftVector = Quaternion.AngleAxis(-Angle, Vector3.up) * characterOrientation;
             Ray leftRayVector = new Ray(rayOrigin, leftVector);
             RaycastHit leftRaycastHit;
-            bool leftResult = _collider.Raycast(leftRayVector, out leftRaycastHit, MaxLookAhead / 4);
+            bool leftResult = _collider.Raycast(leftRayVector, out leftRaycastHit, MaxLookAhead / SideDecreaseFactor);
             
             // right ray
             Vector3 rightVector = Quaternion.AngleAxis(Angle, Vector3.up) * characterOrientation;
             Ray rightRayVector = new Ray(rayOrigin, rightVector);
             RaycastHit rightRaycastHit;
-            bool rightResult = _collider.Raycast(rightRayVector, out rightRaycastHit, MaxLookAhead / 4);
+            bool rightResult = _collider.Raycast(rightRayVector, out rightRaycastHit, MaxLookAhead / SideDecreaseFactor);
 
             if (DebugGizmos)
             {
                 //main
-                Debug.DrawLine(rayOrigin, rayOrigin + characterOrientation * MaxLookAhead, Color.black);
+                Debug.DrawLine(rayOrigin, rayOrigin + characterOrientation * MaxLookAhead, this.DebugColor);
                 //left
-                Debug.DrawLine(rayOrigin, rayOrigin + leftVector * MaxLookAhead / 2, Color.black);
+                Debug.DrawLine(rayOrigin, rayOrigin + leftVector * MaxLookAhead / SideDecreaseFactor, this.DebugColor);
                 //right
-                Debug.DrawLine(rayOrigin, rayOrigin + rightVector * MaxLookAhead / 2, Color.black);
+                Debug.DrawLine(rayOrigin, rayOrigin + rightVector * MaxLookAhead / SideDecreaseFactor, this.DebugColor);
             }
 
             if (mainResult) {

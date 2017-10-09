@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.Movement.Arbitration
 {
@@ -6,6 +7,7 @@ namespace Assets.Scripts.IAJ.Unity.Movement.Arbitration
     {
         public DynamicMovement.DynamicMovement Movement { get; set; }
         public float Weight { get; set; }
+        public Vector3 CurrentContribution { get; internal set; }
 
         public MovementWithWeight(DynamicMovement.DynamicMovement movement)
         {
@@ -20,49 +22,51 @@ namespace Assets.Scripts.IAJ.Unity.Movement.Arbitration
         }
     }
 
-    public class BlendedMovement : DynamicMovement.DynamicMovement
-    {
-        
-        public override string Name
-        {
+    public class BlendedMovement : DynamicMovement.DynamicMovement {
+
+        public override string Name {
             get { return "Blended"; }
         }
 
         public List<MovementWithWeight> Movements { get; private set; }
 
-        public BlendedMovement()
-        {
+        public BlendedMovement() {
             this.Movements = new List<MovementWithWeight>();
             this.Output = new MovementOutput();
         }
 
-        public override MovementOutput GetMovement()
-        {
+        public override MovementOutput GetMovement() {
             MovementOutput tempOutput;
 
             this.Output.Clear();
 
             var totalWeight = 0.0f;
 
-            foreach (MovementWithWeight movementWithWeight in this.Movements)
-            {
+            foreach (MovementWithWeight movementWithWeight in this.Movements) {
                 movementWithWeight.Movement.Character = this.Character;
-                
+
                 tempOutput = movementWithWeight.Movement.GetMovement();
-                if (tempOutput.SquareMagnitude() > 0)
-                {
+                if (tempOutput.SquareMagnitude() > 0) {
+                    movementWithWeight.CurrentContribution = tempOutput.linear * movementWithWeight.Weight;
+
                     this.Output.linear += tempOutput.linear * movementWithWeight.Weight;
                     this.Output.angular += tempOutput.angular * movementWithWeight.Weight;
-                    totalWeight += movementWithWeight.Weight;    
+                    totalWeight += movementWithWeight.Weight;
+
+                } else {
+                    movementWithWeight.CurrentContribution = new Vector3(0, 0, 0);
                 }
             }
 
-            if (totalWeight > 0)
-            {
+            if (totalWeight > 0) {
                 //in case the totalWeight is not 0, we need to normalize
-                float normalizationFactor = 1.0f/totalWeight;
+                float normalizationFactor = 1.0f / totalWeight;
                 this.Output.linear *= normalizationFactor;
                 this.Output.angular *= normalizationFactor;
+                foreach (MovementWithWeight movementWithWeight in this.Movements) {
+                    movementWithWeight.CurrentContribution *= normalizationFactor;
+                }
+
             }
 
             return this.Output;
